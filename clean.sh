@@ -28,6 +28,10 @@ find "$BASE_DIR/templates" -type f -name '*.html.twig' ! -name 'base.html.twig' 
 # Suppression des dossiers vides dans templates/
 find "$BASE_DIR/templates" -type d -empty -delete
 
+# Suppression des fichiers Vue.js dans assets/vue/controllers
+echo "Suppression des fichiers Vue.js dans assets/vue/controllers..."
+find "$BASE_DIR/assets/vue/controllers" -type f -name '*.vue' -delete
+
 # Suppression des fichiers de cache et logs
 echo "Suppression des fichiers de cache et logs..."
 rm -rf "$BASE_DIR/var/cache" "$BASE_DIR/var/log"
