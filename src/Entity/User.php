@@ -2,7 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\UserRepository;
+use App\State\UserProcessor;
+use App\State\UtilisateurProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -12,6 +20,25 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_LOGIN', fields: ['login'])]
+#[ORM\UniqueConstraint(name: "UNIQ_IDENTIFIER_EMAIL", fields: ["adresseMail"])]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new Delete(security: "is_granted('UTILISATEUR_EDIT', object) and object == user"),
+        new Post(
+            denormalizationContext: ["groups" => ["utilisateur:create"]],
+            validationContext: ["groups" => ["Default", "utilisateur:create"]],
+            processor: UserProcessor::class
+        ),
+        new Patch(
+            denormalizationContext: ["groups" => ["utilisateur:update"]],
+            security: "is_granted('UTILISATEUR_EDIT', object) and object == user",
+            validationContext: ["groups" => ["Default", "utilisateur:update"]],
+            processor: UserProcessor::class,
+        ),
+        new GetCollection()
+    ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
