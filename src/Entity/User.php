@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -46,6 +48,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateDeNaissance = null;
+
+    /**
+     * @var Collection<int, EvenementMusical>
+     */
+    #[ORM\ManyToMany(targetEntity: EvenementMusical::class, mappedBy: 'participants')]
+    private Collection $evenementMusicals;
+
+    /**
+     * @var Collection<int, PartieConcert>
+     */
+    #[ORM\OneToMany(targetEntity: PartieConcert::class, mappedBy: 'artiste', orphanRemoval: true)]
+    private Collection $partieConcerts;
+
+    public function __construct()
+    {
+        $this->evenementMusicals = new ArrayCollection();
+        $this->partieConcerts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -178,6 +198,63 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDateDeNaissance(\DateTimeInterface $dateDeNaissance): static
     {
         $this->dateDeNaissance = $dateDeNaissance;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EvenementMusical>
+     */
+    public function getEvenementMusicals(): Collection
+    {
+        return $this->evenementMusicals;
+    }
+
+    public function addEvenementMusical(EvenementMusical $evenementMusical): static
+    {
+        if (!$this->evenementMusicals->contains($evenementMusical)) {
+            $this->evenementMusicals->add($evenementMusical);
+            $evenementMusical->addParticipant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvenementMusical(EvenementMusical $evenementMusical): static
+    {
+        if ($this->evenementMusicals->removeElement($evenementMusical)) {
+            $evenementMusical->removeParticipant($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PartieConcert>
+     */
+    public function getPartieConcerts(): Collection
+    {
+        return $this->partieConcerts;
+    }
+
+    public function addPartieConcert(PartieConcert $partieConcert): static
+    {
+        if (!$this->partieConcerts->contains($partieConcert)) {
+            $this->partieConcerts->add($partieConcert);
+            $partieConcert->setArtiste($this);
+        }
+
+        return $this;
+    }
+
+    public function removePartieConcert(PartieConcert $partieConcert): static
+    {
+        if ($this->partieConcerts->removeElement($partieConcert)) {
+            // set the owning side to null (unless already changed)
+            if ($partieConcert->getArtiste() === $this) {
+                $partieConcert->setArtiste(null);
+            }
+        }
 
         return $this;
     }

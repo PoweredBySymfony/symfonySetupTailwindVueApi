@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EvenementMusicalRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,6 +30,24 @@ class EvenementMusical
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $adresse = null;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'evenementMusicals')]
+    private Collection $participants;
+
+    /**
+     * @var Collection<int, Scene>
+     */
+    #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'evenementMusical')]
+    private Collection $scenes;
+
+    public function __construct()
+    {
+        $this->participants = new ArrayCollection();
+        $this->scenes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -90,6 +110,60 @@ class EvenementMusical
     public function setAdresse(string $adresse): static
     {
         $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipant(User $participant): static
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants->add($participant);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipant(User $participant): static
+    {
+        $this->participants->removeElement($participant);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Scene>
+     */
+    public function getScenes(): Collection
+    {
+        return $this->scenes;
+    }
+
+    public function addScene(Scene $scene): static
+    {
+        if (!$this->scenes->contains($scene)) {
+            $this->scenes->add($scene);
+            $scene->setEvenementMusical($this);
+        }
+
+        return $this;
+    }
+
+    public function removeScene(Scene $scene): static
+    {
+        if ($this->scenes->removeElement($scene)) {
+            // set the owning side to null (unless already changed)
+            if ($scene->getEvenementMusical() === $this) {
+                $scene->setEvenementMusical(null);
+            }
+        }
 
         return $this;
     }

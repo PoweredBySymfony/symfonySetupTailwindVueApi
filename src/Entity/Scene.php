@@ -19,6 +19,12 @@ class Scene
     #[ORM\Column]
     private ?int $nombreMaxParticipants = null;
 
+    #[ORM\ManyToOne(inversedBy: 'scenes')]
+    private ?EvenementMusical $evenementMusical = null;
+
+    #[ORM\ManyToOne(inversedBy: 'scenes')]
+    private ?PartieConcert $partieConcerts = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +50,30 @@ class Scene
     public function setNombreMaxParticipants(int $nombreMaxParticipants): static
     {
         $this->nombreMaxParticipants = $nombreMaxParticipants;
+
+        return $this;
+    }
+
+    public function getEvenementMusical(): ?EvenementMusical
+    {
+        return $this->evenementMusical;
+    }
+
+    public function setEvenementMusical(?EvenementMusical $evenementMusical): static
+    {
+        $this->evenementMusical = $evenementMusical;
+
+        return $this;
+    }
+
+    public function getPartieConcerts(): ?PartieConcert
+    {
+        return $this->partieConcerts;
+    }
+
+    public function setPartieConcerts(?PartieConcert $partieConcerts): static
+    {
+        $this->partieConcerts = $partieConcerts;
 
         return $this;
     }
