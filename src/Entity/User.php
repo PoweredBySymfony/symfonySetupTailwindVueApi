@@ -30,8 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(),
         new Delete(security: "is_granted('UTILISATEUR_EDIT', object) and object == user"),
         new Post(
-            denormalizationContext: ["groups" => ["user:create"]],
-            validationContext: ["groups" => ["Default", "user:create"]],
+            validationContext: ["groups" => ["Default", "utilisateur:create"]],
             processor: UserProcessor::class
         ),
         new Patch(
