@@ -16,6 +16,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_LOGIN', fields: ['login'])]
@@ -25,14 +26,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
         new Get(),
         new Delete(security: "is_granted('UTILISATEUR_EDIT', object) and object == user"),
         new Post(
-            denormalizationContext: ["groups" => ["utilisateur:create"]],
-            validationContext: ["groups" => ["Default", "utilisateur:create"]],
+            denormalizationContext: ["groups" => ["user:create"]],
+            validationContext: ["groups" => ["Default", "user:create"]],
             processor: UserProcessor::class
         ),
         new Patch(
-            denormalizationContext: ["groups" => ["utilisateur:update"]],
+            denormalizationContext: ["groups" => ["user:update"]],
             security: "is_granted('UTILISATEUR_EDIT', object) and object == user",
-            validationContext: ["groups" => ["Default", "utilisateur:update"]],
+            validationContext: ["groups" => ["Default", "user:update"]],
             processor: UserProcessor::class,
         ),
         new GetCollection()
@@ -46,6 +47,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(groups: ["user:create"])]
+    #[Assert\NotNull(groups: ["user:create"])]
+    #[Assert\Length(min: 4, max: 20, minMessage: "Login trop court", maxMessage: "Login trop long")]
     private ?string $login = null;
 
     /**
@@ -61,18 +65,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(groups: ["user:create"])]
+    #[Assert\NotNull(groups: ["user:create"])]
+    #[Assert\Email(groups: ["user:create"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(groups: ["user:create"])]
+    #[Assert\NotNull(groups: ["user:create"])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(groups: ["user:create"])]
+    #[Assert\NotNull(groups: ["user:create"])]
     private ?string $prenom = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(groups: ["user:create"])]
+    #[Assert\NotNull(groups: ["user:create"])]
     private ?string $villeHabitation = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(groups: ["user:create"])]
+    #[Assert\NotNull(groups: ["user:create"])]
+    #[Assert\DateTime(format: "Y-m-d", message: "La date de naissance doit être au format YYYY-MM-DD", groups: ["user:create"])]
     private ?\DateTimeInterface $dateDeNaissance = null;
 
     /**

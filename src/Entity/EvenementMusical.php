@@ -13,15 +13,24 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EvenementMusicalRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(),
-        new Get(),
-        new Post(),
-        new Patch(),
-        new Delete()
+        new GetCollection(
+        ),
+        new Get(
+        ),
+        new Post(
+            validationContext: ['groups' => ['evenement_musical:create']]
+        ),
+        new Patch(
+            validationContext: ['groups' => ['evenement_musical:update']]
+        ),
+        new Delete(
+
+        )
     ]
 )]
 class EvenementMusical
@@ -32,18 +41,33 @@ class EvenementMusical
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(groups: ['evenement_musical:create'])]
+    #[Assert\NotNull(groups: ['evenement_musical:create'])]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank(groups: ['evenement_musical:create'])]
+    #[Assert\NotNull(groups: ['evenement_musical:create'])]
+    #[Assert\DateTime(groups: ['evenement_musical:create'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank(groups: ['evenement_musical:create'])]
+    #[Assert\NotNull(groups: ['evenement_musical:create'])]
+    #[Assert\DateTime(groups: ['evenement_musical:create'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(groups: ['evenement_musical:create'])]
+    #[Assert\NotNull(groups: ['evenement_musical:create'])]
+//    fait une vérif pour que les nombre soit toujours positif ou égal a 0
+    #[Assert\PositiveOrZero(groups: ['evenement_musical:create'])]
+    #[Assert\Type(type: 'float', groups: ['evenement_musical:create'])]
     private ?float $prix = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(groups: ['evenement_musical:create'])]
+    #[Assert\NotNull(groups: ['evenement_musical:create'])]
     private ?string $adresse = null;
 
     /**
