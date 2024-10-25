@@ -7,19 +7,24 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-final class UserVoter extends Voter
+final class SceneVoter extends Voter
 {
-    public const USER_EDIT = 'UTILISATEUR_EDIT';
+    public const SCENE_EDIT = 'SCENE_EDIT';
+//    public const VIEW = 'POST_VIEW';
+    public const SCENE_DELETE = 'SCENE_DELETE';
+
     public function __construct(
         private readonly Security $security
-    ) {}
+    )
+    {
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::USER_EDIT])
-            && $subject instanceof \App\Entity\User;
+        return in_array($attribute, [self::SCENE_EDIT, self::SCENE_DELETE])
+            && $subject instanceof \App\Entity\Scene;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -33,19 +38,16 @@ final class UserVoter extends Voter
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case self::USER_EDIT:
-                // logic to determine if the user can EDIT
-                // return true or false
-                if($subject == null){
+            case self::SCENE_DELETE:
+            case self::SCENE_EDIT:
+                if ($subject == null) {
                     return false;
-                }
-                elseif ($this->security->isGranted('ROLE_ADMIN')){
+                } elseif ($this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted('ROLE_ORGANISATEUR')) {
                     return true;
-                }
-                elseif ($user !== $subject){
+                } elseif ($user !== $subject) {
                     return false;
                 }
-                return true;
+                break;
         }
 
         return false;

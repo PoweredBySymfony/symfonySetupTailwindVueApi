@@ -23,13 +23,15 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(
         ),
         new Post(
+            security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
             validationContext: ['groups' => ['evenement_musical:create']]
         ),
         new Patch(
+            security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
             validationContext: ['groups' => ['evenement_musical:update']]
         ),
         new Delete(
-
+            security: "is_granted('EVENEMENT_MUSICAL_DELETE', object) and object == user"
         )
     ]
 )]
