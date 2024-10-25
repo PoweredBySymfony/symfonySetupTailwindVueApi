@@ -18,12 +18,16 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Get(),
         new Post(
+            security: "is_granted('SCENE_EDIT', object) and object == user",
             validationContext: ['groups' => ['scene:create']]
         ),
         new Patch(
+            security: "is_granted('SCENE_EDIT', object) and object == user",
             validationContext: ['groups' => ['scene:update']]
         ),
-        new Delete()
+        new Delete(
+            security: "is_granted('SCENE_DELETE', object) and object == user"
+        )
     ]
 )]
 class Scene

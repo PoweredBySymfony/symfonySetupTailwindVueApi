@@ -9,9 +9,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class UserVoter extends Voter
 {
-    public const UTILISATEUR_EDIT = 'UTILISATEUR_EDIT';
+    public const USER_EDIT = 'UTILISATEUR_EDIT';
     public function __construct(
-        // Service fictif
         private readonly Security $security
     ) {}
 
@@ -19,7 +18,7 @@ final class UserVoter extends Voter
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::UTILISATEUR_EDIT])
+        return in_array($attribute, [self::USER_EDIT])
             && $subject instanceof \App\Entity\User;
     }
 
@@ -34,7 +33,7 @@ final class UserVoter extends Voter
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case self::UTILISATEUR_EDIT:
+            case self::USER_EDIT:
                 // logic to determine if the user can EDIT
                 // return true or false
                 if($subject == null){
