@@ -29,7 +29,6 @@ use Symfony\Component\Validator\Constraints\NotNull;
         new Get(),
         new Delete(security: "is_granted('UTILISATEUR_EDIT', object) and object == user"),
         new Post(
-            denormalizationContext: ["groups" => ["utilisateur:create"]],
             validationContext: ["groups" => ["Default", "utilisateur:create"]],
             processor: UserProcessor::class
         ),
