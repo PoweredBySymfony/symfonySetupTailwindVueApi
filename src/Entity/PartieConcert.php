@@ -21,12 +21,16 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Get(),
         new Post(
+            security: "is_granted('PARTIE_CONCERT_EDIT', object) and object == user",
             validationContext: ['groups' => ['partie_concert:create']]
         ),
         new Patch(
+            security: "is_granted('PARTIE_CONCERT_EDIT', object) and object == user",
             validationContext: ['groups' => ['partie_concert:update']]
         ),
-        new Delete()
+        new Delete(
+            security: "is_granted('PARTIE_CONCERT_DELETE', object) and object == user"
+        )
     ]
 )]
 class PartieConcert
