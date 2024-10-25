@@ -13,11 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SceneRepository::class)]
 #[ApiResource(
-    new GetCollection(),
-    new Get(),
-    new Post(),
-    new Patch(),
-    new Delete()
+    operations: [
+        new GetCollection(),
+        new Get(),
+        new Post(),
+        new Patch(),
+        new Delete()
+    ]
 )]
 class Scene
 {
