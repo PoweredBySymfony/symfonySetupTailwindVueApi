@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\PartieConcertRepository;
+use App\State\EvenementMusicalProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -22,11 +23,13 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(),
         new Post(
             security: "is_granted('PARTIE_CONCERT_EDIT', object) and object == user",
-            validationContext: ['groups' => ['partie_concert:create']]
+            validationContext: ['groups' => ['partie_concert:create']],
+            processor: EvenementMusicalProcessor::class
         ),
         new Patch(
             security: "is_granted('PARTIE_CONCERT_EDIT', object) and object == user",
-            validationContext: ['groups' => ['partie_concert:update']]
+            validationContext: ['groups' => ['partie_concert:update']],
+            processor: EvenementMusicalProcessor::class
         ),
         new Delete(
             security: "is_granted('PARTIE_CONCERT_DELETE', object) and object == user"
