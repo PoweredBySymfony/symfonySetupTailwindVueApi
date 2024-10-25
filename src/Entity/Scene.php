@@ -10,14 +10,19 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\SceneRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SceneRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
-        new Patch(),
+        new Post(
+            validationContext: ['groups' => ['scene:create']]
+        ),
+        new Patch(
+            validationContext: ['groups' => ['scene:update']]
+        ),
         new Delete()
     ]
 )]
@@ -29,9 +34,14 @@ class Scene
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(groups: ['scene:create'])]
+    #[Assert\NotNull(groups: ['scene:create'])]
     private ?string $nom = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(groups: ['scene:create'])]
+    #[Assert\Type(type: 'int', groups: ['scene:create'])]
+    #[Assert\PositiveOrZero(groups: ['scene:create'])]
     private ?int $nombreMaxParticipants = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]

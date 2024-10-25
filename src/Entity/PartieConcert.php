@@ -13,14 +13,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PartieConcertRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
-        new Patch(),
+        new Post(
+            validationContext: ['groups' => ['partie_concert:create']]
+        ),
+        new Patch(
+            validationContext: ['groups' => ['partie_concert:update']]
+        ),
         new Delete()
     ]
 )]
@@ -32,15 +37,25 @@ class PartieConcert
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nomArtiste = null;
+    #[Assert\NotBlank(groups: ['partie_concert:create'])]
+    #[Assert\NotNull(groups: ['partie_concert:create'])]
+    private ?string $nom = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(groups: ['partie_concert:create'])]
+    #[Assert\Type(type: 'bool', groups: ['partie_concert:create'])]
     private ?bool $artistePrincipal = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank(groups: ['partie_concert:create'])]
+    #[Assert\NotNull(groups: ['partie_concert:create'])]
+    #[Assert\DateTime(groups: ['partie_concert:create'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank(groups: ['partie_concert:create'])]
+    #[Assert\NotNull(groups: ['partie_concert:create'])]
+    #[Assert\DateTime(groups: ['partie_concert:create'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     /**
@@ -63,14 +78,14 @@ class PartieConcert
         return $this->id;
     }
 
-    public function getNomArtiste(): ?string
+    public function getNom(): ?string
     {
-        return $this->nomArtiste;
+        return $this->nom;
     }
 
-    public function setNomArtiste(string $nomArtiste): static
+    public function setNom(string $nom): static
     {
-        $this->nomArtiste = $nomArtiste;
+        $this->nom = $nom;
 
         return $this;
     }
