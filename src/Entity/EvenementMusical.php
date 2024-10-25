@@ -13,37 +13,49 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EvenementMusicalRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
-        new Patch(),
+        new Post(
+            denormalizationContext: ["groups" => ["event_music:create"]],
+        ),
+        new Patch(
+            denormalizationContext: ["groups" => ["event_music:update"]],
+        ),
         new Delete()
-    ]
+    ],
+    normalizationContext: ['groups' => ['evenementMusical:read']]
 )]
 class EvenementMusical
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     #[ORM\Column]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?float $prix = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?string $adresse = null;
 
     /**

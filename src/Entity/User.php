@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -16,6 +17,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_LOGIN', fields: ['login'])]
@@ -25,66 +29,75 @@ use Symfony\Component\Security\Core\User\UserInterface;
         new Get(),
         new Delete(security: "is_granted('UTILISATEUR_EDIT', object) and object == user"),
         new Post(
-            denormalizationContext: ["groups" => ["utilisateur:create"]],
-            validationContext: ["groups" => ["Default", "utilisateur:create"]],
+            denormalizationContext: ["groups" => ["user:create"]],
+            validationContext: ["groups" => ["Default", "user:create"]],
             processor: UserProcessor::class
         ),
         new Patch(
-            denormalizationContext: ["groups" => ["utilisateur:update"]],
+            denormalizationContext: ["groups" => ["user:update"]],
             security: "is_granted('UTILISATEUR_EDIT', object) and object == user",
-            validationContext: ["groups" => ["Default", "utilisateur:update"]],
+            validationContext: ["groups" => ["Default", "user:update"]],
             processor: UserProcessor::class,
         ),
         new GetCollection()
-    ]
+    ],
+    normalizationContext: ["groups" => ["user:read"]],
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['user:read', 'user:create',"partie_concert:read"])]
     private ?string $login = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
-    #[ORM\Column]
-    private ?string $password = null;
+
+    #[UserPassword(groups: ["utilisateur:update"])]
+    #[ApiProperty(readable: false)]
+    #[Assert\NotBlank(groups: ["utilisateur:update"])]
+    #[Assert\NotNull(groups: ["utilisateur:update"])]
+    #[Groups(['utilisateur:update'])]
+    private ?string $currentPlainPassword = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read','user:create', 'user:update',"partie_concert:read"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?string $prenom = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?string $villeHabitation = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?\DateTimeInterface $dateDeNaissance = null;
 
-    /**
-     * @var Collection<int, EvenementMusical>
-     */
-    #[ORM\ManyToMany(targetEntity: EvenementMusical::class, mappedBy: 'participants')]
+    // Définition de l'attribut mot de passe sans le groupe de dénormalisation
+    #[ORM\Column]
+    #[ApiProperty(readable: false, writable: false)]
+    private ?string $password = null;
+
+    // Associez les autres attributs (collections) aux groupes de lecture
+    #[ORM\ManyToMany(targetEntity: EvenementMusical::class, mappedBy: 'participants',)]
+    #[Groups('user:read')]
     private Collection $evenementMusicals;
 
-    /**
-     * @var Collection<int, PartieConcert>
-     */
     #[ORM\OneToMany(targetEntity: PartieConcert::class, mappedBy: 'artiste', orphanRemoval: true)]
+    #[Groups('user:read')]
     private Collection $partieConcerts;
 
     public function __construct()

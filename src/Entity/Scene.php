@@ -10,34 +10,45 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\SceneRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SceneRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
-        new Patch(),
+        new Post(
+            denormalizationContext: ["groups" => ["scene:create"]],
+        ),
+        new Patch(
+            denormalizationContext: ["groups" => ["scene:update"]],
+        ),
         new Delete()
-    ]
+    ],
+    normalizationContext: ["groups" => ["scene:read"]]
 )]
 class Scene
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["scene:read","partie_concert:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["scene:read","partie_concert:read"])]
     private ?string $nom = null;
 
     #[ORM\Column]
+    #[Groups(["scene:read","partie_concert:read"])]
     private ?int $nombreMaxParticipants = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]
+    #[Groups(["scene:read","partie_concert:read"])]
     private ?EvenementMusical $evenementMusical = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]
+    #[Groups(["scene:read"])]
     private ?PartieConcert $partieConcerts = null;
 
     public function getId(): ?int

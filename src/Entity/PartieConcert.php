@@ -9,48 +9,63 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\PartieConcertRepository;
+use App\State\UserProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PartieConcertRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
-        new Patch(),
-        new Delete()
-    ]
+        new Post(
+            denormalizationContext: ["groups" => ["partie_concert:create"]],
+        ),
+        new Patch(
+            denormalizationContext: ["groups" => ["partie_concert:update"]],
+            security: "is_granted('UTILISATEUR_EDIT', object) and object == user",
+        ),
+        new Delete(),
+    ],
+    normalizationContext: ["groups" => ["partie_concert:read"]],
 )]
 class PartieConcert
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["scene:read", "partie_concert:read",'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["scene:read",'user:read'])]
     private ?string $nomArtiste = null;
 
     #[ORM\Column]
+    #[Groups(["scene:read","partie_concert:read",'user:read'])]
     private ?bool $artistePrincipal = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["scene:read","partie_concert:read",'user:read'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["scene:read","partie_concert:read",'user:read'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     /**
      * @var Collection<int, Scene>
      */
     #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'partieConcerts')]
+    #[Groups(["scene:read","partie_concert:read"])]
     private Collection $scenes;
 
     #[ORM\ManyToOne(inversedBy: 'partieConcerts')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["partie_concert:read"])]
     private ?User $artiste = null;
 
     public function __construct()
