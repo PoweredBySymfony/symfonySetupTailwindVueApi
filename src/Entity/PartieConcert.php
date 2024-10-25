@@ -23,16 +23,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new GetCollection(),
         new Get(),
         new Post(
+            normalizationContext: ["groups" => ["partie_concert:read"]],
             denormalizationContext: ["groups" => ["partie_concert:create"]],
             security: "is_granted('PARTIE_CONCERT_EDIT', object) and object == user",
             validationContext: ['groups' => ['partie_concert:create']],
-            processor: EvenementMusicalProcessor::class
+            processor: EvenementMusicalProcessor::class,
         ),
         new Patch(
+            normalizationContext: ["groups" => ["partie_concert:read"]],
             denormalizationContext: ["groups" => ["partie_concert:update"]],
             security: "is_granted('PARTIE_CONCERT_EDIT', object) and object == user",
             validationContext: ['groups' => ['partie_concert:update']],
-            processor: EvenementMusicalProcessor::class
+            processor: EvenementMusicalProcessor::class,
         ),
         new Delete(
             security: "is_granted('PARTIE_CONCERT_DELETE', object) and object == user"
@@ -45,45 +47,45 @@ class PartieConcert
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["scene:read", "partie_concert:read",'user:read'])]
+    #[Groups(["scene:read", "partie_concert:read", 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(groups: ['partie_concert:create'])]
     #[Assert\NotNull(groups: ['partie_concert:create'])]
-    #[Groups(["scene:read",'user:read'])]
+    #[Groups(["scene:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     private ?string $nom = null;
 
     #[ORM\Column]
     #[Assert\NotNull(groups: ['partie_concert:create'])]
     #[Assert\Type(type: 'bool', groups: ['partie_concert:create'])]
-    #[Groups(["scene:read","partie_concert:read",'user:read'])]
+    #[Groups(["scene:read", "partie_concert:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     private ?bool $artistePrincipal = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["scene:read", "partie_concert:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     #[Assert\NotBlank(groups: ['partie_concert:create'])]
     #[Assert\NotNull(groups: ['partie_concert:create'])]
     #[Assert\DateTime(groups: ['partie_concert:create'])]
-    #[Groups(["scene:read","partie_concert:read",'user:read'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["scene:read", "partie_concert:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     #[Assert\NotBlank(groups: ['partie_concert:create'])]
     #[Assert\NotNull(groups: ['partie_concert:create'])]
     #[Assert\DateTime(groups: ['partie_concert:create'])]
-    #[Groups(["scene:read","partie_concert:read",'user:read'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     /**
      * @var Collection<int, Scene>
      */
     #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'partieConcerts')]
-    #[Groups(["scene:read","partie_concert:read"])]
+    #[Groups(["scene:read", "partie_concert:read"])]
     private Collection $scenes;
 
     #[ORM\ManyToOne(inversedBy: 'partieConcerts')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["partie_concert:read"])]
+    #[Groups(["partie_concert:read", 'partie_concert:create', 'partie_concert:update'])]
     private ?User $artiste = null;
 
     public function __construct()

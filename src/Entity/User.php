@@ -17,10 +17,12 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_LOGIN', fields: ['login'])]
@@ -30,7 +32,8 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(),
         new Delete(security: "is_granted('UTILISATEUR_EDIT', object) and object == user"),
         new Post(
-            validationContext: ["groups" => ["Default", "utilisateur:create"]],
+            denormalizationContext: ["groups" => ["user:create"]],
+            validationContext: ["groups" => ["Default", "user:create"]],
             processor: UserProcessor::class
         ),
         new Patch(
@@ -40,24 +43,24 @@ use Symfony\Component\Validator\Constraints as Assert;
             processor: UserProcessor::class,
         ),
         new GetCollection()
-    ]
+    ],
+    normalizationContext: ["groups" => ["user:read"]],
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
     #[Assert\Length(min: 4, max: 20, minMessage: "Login trop court", maxMessage: "Login trop long")]
+    #[Groups(['user:read', 'user:create',"partie_concert:read"])]
     private ?string $login = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
 
@@ -67,49 +70,57 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Length(min: 8, max: 30)]
     private ?string $plainPassword = null;
 
-    /**
-     * @var string The hashed password
-     */
-    #[ORM\Column]
-    private ?string $password = null;
+    #[UserPassword(groups: ["user:update"])]
+    #[ApiProperty(readable: false)]
+    #[Assert\NotBlank(groups: ["user:update"])]
+    #[Assert\NotNull(groups: ["user:update"])]
+    #[Groups(['user:update'])]
+    private ?string $currentPlainPassword = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
     #[Assert\Email(groups: ["user:create"])]
+    #[Groups(['user:read','user:create', 'user:update',"partie_concert:read"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?string $prenom = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?string $villeHabitation = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
     #[Assert\DateTime(format: "Y-m-d", message: "La date de naissance doit être au format YYYY-MM-DD", groups: ["user:create"])]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?\DateTimeInterface $dateDeNaissance = null;
 
-    /**
-     * @var Collection<int, EvenementMusical>
-     */
-    #[ORM\ManyToMany(targetEntity: EvenementMusical::class, mappedBy: 'participants')]
+    // Définition de l'attribut mot de passe sans le groupe de dénormalisation
+    #[ORM\Column]
+    #[ApiProperty(readable: false, writable: false)]
+    private ?string $password = null;
+
+    // Associez les autres attributs (collections) aux groupes de lecture
+    #[ORM\ManyToMany(targetEntity: EvenementMusical::class, mappedBy: 'participants',)]
+    #[Groups('user:read')]
     private Collection $evenementMusicals;
 
-    /**
-     * @var Collection<int, PartieConcert>
-     */
     #[ORM\OneToMany(targetEntity: PartieConcert::class, mappedBy: 'artiste', orphanRemoval: true)]
+    #[Groups('user:read')]
     private Collection $partieConcerts;
 
     public function __construct()
@@ -200,7 +211,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        $this->plainPassword = null;
+        // $this->plainPassword = null;
     }
 
     public function getEmail(): ?string
