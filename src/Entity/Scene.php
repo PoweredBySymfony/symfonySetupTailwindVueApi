@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\SceneRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ApiResource()]
 #[ORM\Entity(repositoryClass: SceneRepository::class)]
 class Scene
 {
