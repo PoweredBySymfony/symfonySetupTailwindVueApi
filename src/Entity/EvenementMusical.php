@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\EvenementMusicalRepository;
+use App\State\EvenementMusicalProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,8 +20,12 @@ use Doctrine\ORM\Mapping as ORM;
     operations: [
         new GetCollection(),
         new Get(),
-        new Post(),
-        new Patch(),
+        new Post(
+            processor: EvenementMusicalProcessor::class
+        ),
+        new Patch(
+            processor: EvenementMusicalProcessor::class
+        ),
         new Delete()
     ]
 )]
