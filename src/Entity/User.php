@@ -59,11 +59,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
 
-    #[UserPassword(groups: ["utilisateur:update"])]
+    #[UserPassword(groups: ["user:update"])]
     #[ApiProperty(readable: false)]
-    #[Assert\NotBlank(groups: ["utilisateur:update"])]
-    #[Assert\NotNull(groups: ["utilisateur:update"])]
-    #[Groups(['utilisateur:update'])]
+    #[Assert\NotBlank(groups: ["user:update"])]
+    #[Assert\NotNull(groups: ["user:update"])]
+    #[Groups(['user:update'])]
     private ?string $currentPlainPassword = null;
 
     #[ORM\Column(length: 255)]
@@ -179,6 +179,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+        $this->currentPlainPassword = null;
     }
 
     public function getEmail(): ?string

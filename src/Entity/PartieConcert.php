@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\PartieConcertRepository;
-use App\State\UserProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -23,9 +22,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new Post(
             denormalizationContext: ["groups" => ["partie_concert:create"]],
+            normalizationContext: ["groups" => ["partie_concert:read"]],
         ),
         new Patch(
             denormalizationContext: ["groups" => ["partie_concert:update"]],
+            normalizationContext: ["groups" => ["partie_concert:read"]],
             security: "is_granted('UTILISATEUR_EDIT', object) and object == user",
         ),
         new Delete(),
@@ -37,35 +38,35 @@ class PartieConcert
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["scene:read", "partie_concert:read",'user:read'])]
+    #[Groups(["scene:read", "partie_concert:read", 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["scene:read",'user:read'])]
+    #[Groups(["scene:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     private ?string $nomArtiste = null;
 
     #[ORM\Column]
-    #[Groups(["scene:read","partie_concert:read",'user:read'])]
+    #[Groups(["scene:read", "partie_concert:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     private ?bool $artistePrincipal = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["scene:read","partie_concert:read",'user:read'])]
+    #[Groups(["scene:read", "partie_concert:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["scene:read","partie_concert:read",'user:read'])]
+    #[Groups(["scene:read", "partie_concert:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     /**
      * @var Collection<int, Scene>
      */
     #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'partieConcerts')]
-    #[Groups(["scene:read","partie_concert:read"])]
+    #[Groups(["scene:read", "partie_concert:read"])]
     private Collection $scenes;
 
     #[ORM\ManyToOne(inversedBy: 'partieConcerts')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["partie_concert:read"])]
+    #[Groups(["partie_concert:read", 'partie_concert:create', 'partie_concert:update'])]
     private ?User $artiste = null;
 
     public function __construct()

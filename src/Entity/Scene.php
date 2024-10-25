@@ -19,9 +19,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new Post(
             denormalizationContext: ["groups" => ["scene:create"]],
+            normalizationContext: ["groups" => ["scene:read"]],
         ),
         new Patch(
             denormalizationContext: ["groups" => ["scene:update"]],
+            normalizationContext: ["groups" => ["scene:read"]],
         ),
         new Delete()
     ],
@@ -32,23 +34,23 @@ class Scene
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["scene:read","partie_concert:read"])]
+    #[Groups(["scene:read", "partie_concert:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["scene:read","partie_concert:read"])]
+    #[Groups(["scene:read", "scene:create", "scene:update", "partie_concert:read"])]
     private ?string $nom = null;
 
     #[ORM\Column]
-    #[Groups(["scene:read","partie_concert:read"])]
+    #[Groups(["scene:read", "scene:create", "scene:update", "partie_concert:read"])]
     private ?int $nombreMaxParticipants = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]
-    #[Groups(["scene:read","partie_concert:read"])]
+    #[Groups(["scene:read", "partie_concert:read", "scene:create"])]
     private ?EvenementMusical $evenementMusical = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]
-    #[Groups(["scene:read"])]
+    #[Groups(["scene:read", "scene:create"])]
     private ?PartieConcert $partieConcerts = null;
 
     public function getId(): ?int

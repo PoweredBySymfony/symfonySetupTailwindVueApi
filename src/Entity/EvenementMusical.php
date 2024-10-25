@@ -22,9 +22,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(),
         new Post(
             denormalizationContext: ["groups" => ["event_music:create"]],
+            normalizationContext: ["groups" => ["evenementMusical:read"]],
         ),
         new Patch(
             denormalizationContext: ["groups" => ["event_music:update"]],
+            normalizationContext: ["groups" => ["evenementMusical:read"]],
         ),
         new Delete()
     ],
@@ -35,39 +37,41 @@ class EvenementMusical
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
+    #[Groups(["scene:read", "evenementMusical:read", 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
+    #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
+    #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
+    #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     #[ORM\Column]
-    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
+    #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     private ?float $prix = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
+    #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     private ?string $adresse = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'evenementMusicals')]
+    #[Groups(['evenementMusical:read', 'event_music:create', 'event_music:update'])]
     private Collection $participants;
 
     /**
      * @var Collection<int, Scene>
      */
     #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'evenementMusical')]
+    #[Groups(['evenementMusical:read','event_music:create','event_music:update'])]
     private Collection $scenes;
 
     public function __construct()
