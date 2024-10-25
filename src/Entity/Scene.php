@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use App\Repository\SceneRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SceneRepository::class)]
 #[ApiResource(
@@ -18,40 +19,48 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Get(),
         new Post(
+            denormalizationContext: ["groups" => ["scene:create"]],
             security: "is_granted('SCENE_EDIT', object) and object == user",
             validationContext: ['groups' => ['scene:create']]
         ),
         new Patch(
+            denormalizationContext: ["groups" => ["scene:update"]],
             security: "is_granted('SCENE_EDIT', object) and object == user",
             validationContext: ['groups' => ['scene:update']]
         ),
         new Delete(
             security: "is_granted('SCENE_DELETE', object) and object == user"
         )
-    ]
+    ],
+    normalizationContext: ["groups" => ["scene:read"]]
 )]
 class Scene
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["scene:read","partie_concert:read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(groups: ['scene:create'])]
     #[Assert\NotNull(groups: ['scene:create'])]
+    #[Groups(["scene:read","partie_concert:read"])]
     private ?string $nom = null;
 
     #[ORM\Column]
     #[Assert\NotNull(groups: ['scene:create'])]
     #[Assert\Type(type: 'int', groups: ['scene:create'])]
     #[Assert\PositiveOrZero(groups: ['scene:create'])]
+    #[Groups(["scene:read","partie_concert:read"])]
     private ?int $nombreMaxParticipants = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]
+    #[Groups(["scene:read","partie_concert:read"])]
     private ?EvenementMusical $evenementMusical = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]
+    #[Groups(["scene:read"])]
     private ?PartieConcert $partieConcerts = null;
 
     public function getId(): ?int

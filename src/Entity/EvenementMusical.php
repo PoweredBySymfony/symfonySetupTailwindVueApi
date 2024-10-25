@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EvenementMusicalRepository::class)]
@@ -23,40 +24,48 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Get(
         ),
         new Post(
+            denormalizationContext: ["groups" => ["event_music:create"]],
             security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
-            validationContext: ['groups' => ['evenement_musical:create']]
+            validationContext: ['groups' => ['evenement_musical:create']],
         ),
         new Patch(
+            denormalizationContext: ["groups" => ["event_music:update"]],
             security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
             validationContext: ['groups' => ['evenement_musical:update']]
         ),
         new Delete(
             security: "is_granted('EVENEMENT_MUSICAL_DELETE', object) and object == user"
         )
-    ]
+    ],
+    normalizationContext: ['groups' => ['evenementMusical:read']]
+
 )]
 class EvenementMusical
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
     #[Assert\DateTime(groups: ['evenement_musical:create'])]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
     #[Assert\DateTime(groups: ['evenement_musical:create'])]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     #[ORM\Column]
@@ -65,11 +74,13 @@ class EvenementMusical
 //    fait une vérif pour que les nombre soit toujours positif ou égal a 0
     #[Assert\PositiveOrZero(groups: ['evenement_musical:create'])]
     #[Assert\Type(type: 'float', groups: ['evenement_musical:create'])]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?float $prix = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
+    #[Groups(["scene:read", "evenementMusical:read",'user:read'])]
     private ?string $adresse = null;
 
     /**
