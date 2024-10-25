@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\EvenementMusicalRepository;
+use App\State\EvenementMusicalProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -18,17 +19,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: EvenementMusicalRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(
-        ),
-        new Get(
-        ),
+        new GetCollection(),
+        new Get(),
         new Post(
             security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
-            validationContext: ['groups' => ['evenement_musical:create']]
+            validationContext: ['groups' => ['evenement_musical:create']],
+            processor: EvenementMusicalProcessor::class
         ),
         new Patch(
             security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
-            validationContext: ['groups' => ['evenement_musical:update']]
+            validationContext: ['groups' => ['evenement_musical:update']],
+            processor: EvenementMusicalProcessor::class
         ),
         new Delete(
             security: "is_granted('EVENEMENT_MUSICAL_DELETE', object) and object == user"
