@@ -42,7 +42,10 @@ use Symfony\Component\Validator\Constraints\NotNull;
             validationContext: ["groups" => ["Default", "user:update"]],
             processor: UserProcessor::class,
         ),
-        new GetCollection()
+//        we don't want basic, VIP or artist user to acces the list of users
+        new GetCollection(
+            security: "is_granted('ROLE_ADMIN')",
+        )
     ],
     normalizationContext: ["groups" => ["user:read"]],
 )]
