@@ -16,28 +16,33 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\Link;
 
 #[ORM\Entity(repositoryClass: EvenementMusicalRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(),
+        new GetCollection(
+            uriTemplate: '/scenes/{idScene}/evenements',
+            uriVariables: [
+                'idScene' => new Link(toProperty: 'scenes', fromClass: Scene::class)
+            ],
+        ),
         new Get(),
         new Post(
             normalizationContext: ["groups" => ["evenementMusical:read"]],
             denormalizationContext: ["groups" => ["event_music:create"]],
-            security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
             validationContext: ['groups' => ['evenement_musical:create']],
             processor: EvenementMusicalProcessor::class,
         ),
         new Patch(
             normalizationContext: ["groups" => ["evenementMusical:read"]],
             denormalizationContext: ["groups" => ["event_music:update"]],
-            security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
+           security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
             validationContext: ['groups' => ['evenement_musical:update']],
             processor: EvenementMusicalProcessor::class
         ),
         new Delete(
-            security: "is_granted('EVENEMENT_MUSICAL_DELETE', object) and object == user"
+         //   security: "is_granted('EVENEMENT_MUSICAL_DELETE', object) and object == user"
         )
     ],
     normalizationContext: ['groups' => ['evenementMusical:read']]
@@ -61,21 +66,18 @@ class EvenementMusical
     #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
-    #[Assert\DateTime(groups: ['evenement_musical:create'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
-    #[Assert\DateTime(groups: ['evenement_musical:create'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     #[ORM\Column]
     #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
-//    fait une vérif pour que les nombre soit toujours positif ou égal a 0
     #[Assert\PositiveOrZero(groups: ['evenement_musical:create'])]
     #[Assert\Type(type: 'float', groups: ['evenement_musical:create'])]
     private ?float $prix = null;
@@ -90,14 +92,14 @@ class EvenementMusical
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'evenementMusicals')]
-    #[Groups(['evenementMusical:read', 'event_music:create', 'event_music:update'])]
+    #[Groups(['evenementMusical:read','event_music:create', 'event_music:update'])]
     private Collection $participants;
 
     /**
      * @var Collection<int, Scene>
      */
     #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'evenementMusical')]
-    #[Groups(['evenementMusical:read','event_music:create','event_music:update'])]
+    #[Groups(['evenementMusical:read','event_music:update'])]
     private Collection $scenes;
 
     public function __construct()

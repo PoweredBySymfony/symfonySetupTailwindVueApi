@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\SceneRepository;
@@ -16,22 +17,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: SceneRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(),
+        new GetCollection(
+        ),
         new Get(),
         new Post(
             normalizationContext: ["groups" => ["scene:read"]],
             denormalizationContext: ["groups" => ["scene:create"]],
-            security: "is_granted('SCENE_EDIT', object) and object == user",
+          //  security: "is_granted('SCENE_EDIT', object) and object == user",
             validationContext: ['groups' => ['scene:create']],
         ),
         new Patch(
             normalizationContext: ["groups" => ["scene:read"]],
             denormalizationContext: ["groups" => ["scene:update"]],
-            security: "is_granted('SCENE_EDIT', object) and object == user",
+         //   security: "is_granted('SCENE_EDIT', object) and object == user",
             validationContext: ['groups' => ['scene:update']],
         ),
         new Delete(
-            security: "is_granted('SCENE_DELETE', object) and object == user"
+         //   security: "is_granted('SCENE_DELETE', object) and object == user"
         )
     ],
     normalizationContext: ["groups" => ["scene:read"]]
@@ -58,11 +60,11 @@ class Scene
     private ?int $nombreMaxParticipants = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]
-    #[Groups(["scene:read", "partie_concert:read", "scene:create"])]
+    #[Groups(["scene:read", "partie_concert:read", "scene:create", "scene:update"])]
     private ?EvenementMusical $evenementMusical = null;
 
     #[ORM\ManyToOne(inversedBy: 'scenes')]
-    #[Groups(["scene:read", "scene:create"])]
+    #[Groups(["scene:read", "scene:create","scene:update"])]
     private ?PartieConcert $partieConcerts = null;
 
     public function getId(): ?int

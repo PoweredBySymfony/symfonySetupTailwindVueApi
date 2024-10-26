@@ -23,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
+use ApiPlatform\Metadata\Link;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_LOGIN', fields: ['login'])]
@@ -42,7 +43,12 @@ use Symfony\Component\Validator\Constraints\NotNull;
             validationContext: ["groups" => ["Default", "user:update"]],
             processor: UserProcessor::class,
         ),
-        new GetCollection()
+        new GetCollection(
+            uriTemplate: '/partieconcerts/{idPartieConcert}/users',
+            uriVariables: [
+                'idPartieConcert' => new Link(fromProperty: 'artiste', fromClass: PartieConcert::class)
+            ],
+        )
     ],
     normalizationContext: ["groups" => ["user:read"]],
 )]
@@ -65,15 +71,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ApiProperty(description: 'plainPassword property', readable: false)]
-    #[NotBlank]
-    #[NotNull]
-    #[Length(min: 8, max: 30)]
+    #[Assert\NotBlank(groups: ["user:create"])]
+    #[Assert\NotNull(groups: ["user:create"])]
+    #[Groups(["user:create"])]
+    #[Assert\Length(min: 8, max: 30, minMessage: "Le texte doit contenir au moins 8 caractères.", maxMessage: "Le texte ne peut pas dépasser 30 caractères.")]
+    #[Assert\Regex(pattern: "#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,30}$#", message: "Format non respecté. Assurez-vous d\"inclure au moins une lettre minuscule, une lettre majuscule et un chiffre.")]
     private ?string $plainPassword = null;
 
-    #[UserPassword(groups: ["user:update"])]
-    #[ApiProperty(readable: false)]
     #[Assert\NotBlank(groups: ["user:update"])]
     #[Assert\NotNull(groups: ["user:update"])]
+    #[UserPassword(groups: ["user:update"])]
+    #[ApiProperty(readable: false)]
     #[Groups(['user:update'])]
     private ?string $currentPlainPassword = null;
 
@@ -105,7 +113,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
-    #[Assert\DateTime(format: "Y-m-d", message: "La date de naissance doit être au format YYYY-MM-DD", groups: ["user:create"])]
     #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?\DateTimeInterface $dateDeNaissance = null;
 
@@ -273,6 +280,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->dateDeNaissance = $dateDeNaissance;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCurrentPlainPassword(): ?string
+    {
+        return $this->currentPlainPassword;
+    }
+
+    /**
+     * @param string|null $currentPlainPassword
+     */
+    public function setCurrentPlainPassword(?string $currentPlainPassword): void
+    {
+        $this->currentPlainPassword = $currentPlainPassword;
     }
 
     /**
