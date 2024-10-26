@@ -60,31 +60,31 @@ class DataBaseFixtures extends Fixture
             $evenementMusical->setDateDeFin(new \DateTime('+1 day'));
             $evenementMusical->setPrix($faker->randomFloat(2, 0, 100));
             $evenementMusical->setAdresse($faker->address);
-
+            $evenementMusical->setOrganisateur($this->getReference("user_" . rand(0, count($users) - 1)));
 
             // Associer des utilisateurs aléatoires à cet événement musical
             foreach (array_slice($users, 0, rand(2, 5)) as $user) {
                 $user->addEvenementMusical($evenementMusical);
             }
 
-            // Utiliser des scènes du pool existant
-            foreach ($scenes as $scene) {
-                $scene->setEvenementMusical($evenementMusical);
-
-                // Créer des parties de concert avec des utilisateurs en référence
-                for ($k = 0; $k < 2; $k++) { // Réduit à 2 parties par scène pour limiter la complexité
-                    $partieConcert = new PartieConcert();
-                    $partieConcert->setNom($faker->sentence(3));
-                    $randomUser = $this->getReference("user_" . rand(0, count($users) - 1));
-                    $partieConcert->setArtiste($randomUser);
-                    $partieConcert->setArtistePrincipal($faker->boolean);
-                    $partieConcert->addScene($scene);
-                    $partieConcert->setDateDeDebut(new \DateTime());
-                    $partieConcert->setDateDeFin(new \DateTime('+1 hour'));
-
-                    $manager->persist($partieConcert);
-                }
-            }
+//            // Utiliser des scènes du pool existant
+//            foreach ($scenes as $scene) {
+//                $scene->setEvenementMusical($evenementMusical);
+//
+//                // Créer des parties de concert avec des utilisateurs en référence
+//                for ($k = 0; $k < 2; $k++) { // Réduit à 2 parties par scène pour limiter la complexité
+//                    $partieConcert = new PartieConcert();
+//                    $partieConcert->setNom($faker->sentence(3));
+//                    $randomUser = $this->getReference("user_" . rand(0, count($users) - 1));
+//                    $partieConcert->setArtiste($randomUser);
+//                    $partieConcert->setArtistePrincipal($faker->boolean);
+//                    $partieConcert->addScene($scene);
+//                    $partieConcert->setDateDeDebut(new \DateTime());
+//                    $partieConcert->setDateDeFin(new \DateTime('+1 hour'));
+//
+//                    $manager->persist($partieConcert);
+//                }
+//            }
 
             $manager->persist($evenementMusical);
         }

@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(
             normalizationContext: ["groups" => ["evenementMusical:read"]],
             denormalizationContext: ["groups" => ["event_music:create"]],
-            security: "is_granted('EVENEMENT_MUSICAL_EDIT', object) and object == user",
+            security: "is_granted('ROLE_ORGANIZER')",
             validationContext: ['groups' => ['evenement_musical:create']],
             processor: EvenementMusicalProcessor::class,
         ),
@@ -37,7 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             processor: EvenementMusicalProcessor::class
         ),
         new Delete(
-            security: "is_granted('EVENEMENT_MUSICAL_DELETE', object) and object == user"
+            security: "is_granted('EVENEMENT_MUSICAL_DELETE', object)"
         )
     ],
     normalizationContext: ['groups' => ['evenementMusical:read']]
@@ -99,6 +99,9 @@ class EvenementMusical
     #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'evenementMusical')]
     #[Groups(['evenementMusical:read','event_music:create','event_music:update'])]
     private Collection $scenes;
+
+    #[ORM\ManyToOne(inversedBy: 'organisateurEvenementMuscial')]
+    private ?User $organisateur = null;
 
     public function __construct()
     {
@@ -221,6 +224,18 @@ class EvenementMusical
                 $scene->setEvenementMusical(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOrganisateur(): ?User
+    {
+        return $this->organisateur;
+    }
+
+    public function setOrganisateur(?User $organisateur): static
+    {
+        $this->organisateur = $organisateur;
 
         return $this;
     }

@@ -126,10 +126,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('user:read')]
     private Collection $partieConcerts;
 
+    /**
+     * @var Collection<int, EvenementMusical>
+     */
+    #[ORM\OneToMany(targetEntity: EvenementMusical::class, mappedBy: 'organisateur')]
+    private Collection $organisateurEvenementMuscial;
+
     public function __construct()
     {
         $this->evenementMusicals = new ArrayCollection();
         $this->partieConcerts = new ArrayCollection();
+        $this->organisateurEvenementMuscial = new ArrayCollection();
     }
 
     public function getPlainPassword(): ?string
@@ -329,6 +336,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($partieConcert->getArtiste() === $this) {
                 $partieConcert->setArtiste(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EvenementMusical>
+     */
+    public function getOrganisateurEvenementMuscial(): Collection
+    {
+        return $this->organisateurEvenementMuscial;
+    }
+
+    public function addOrganisateurEvenementMuscial(EvenementMusical $organisateurEvenementMuscial): static
+    {
+        if (!$this->organisateurEvenementMuscial->contains($organisateurEvenementMuscial)) {
+            $this->organisateurEvenementMuscial->add($organisateurEvenementMuscial);
+            $organisateurEvenementMuscial->setOrganisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganisateurEvenementMuscial(EvenementMusical $organisateurEvenementMuscial): static
+    {
+        if ($this->organisateurEvenementMuscial->removeElement($organisateurEvenementMuscial)) {
+            // set the owning side to null (unless already changed)
+            if ($organisateurEvenementMuscial->getOrganisateur() === $this) {
+                $organisateurEvenementMuscial->setOrganisateur(null);
             }
         }
 
