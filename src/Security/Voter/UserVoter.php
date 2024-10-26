@@ -10,15 +10,19 @@ use Symfony\Component\Security\Core\User\UserInterface;
 final class UserVoter extends Voter
 {
     public const USER_EDIT = 'UTILISATEUR_EDIT';
+    public const USER_DELETE = 'UTILISATEUR_DELETE';
+
     public function __construct(
         private readonly Security $security
-    ) {}
+    )
+    {
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::USER_EDIT])
+        return in_array($attribute, [self::USER_EDIT, self::USER_DELETE])
             && $subject instanceof \App\Entity\User;
     }
 
@@ -36,13 +40,22 @@ final class UserVoter extends Voter
             case self::USER_EDIT:
                 // logic to determine if the user can EDIT
                 // return true or false
-                if($subject == null){
+                if ($subject == null) {
+                    return false;
+                } elseif ($this->security->isGranted('ROLE_ADMIN')) {
+                    return true;
+                } elseif ($user !== $subject) {
                     return false;
                 }
-                elseif ($this->security->isGranted('ROLE_ADMIN')){
+                return true;
+            case self::USER_DELETE:
+                // logic to determine if the user can DELETE
+                // return true or false
+                if ($subject == null) {
+                    return false;
+                } elseif ($this->security->isGranted('ROLE_ADMIN') || $this->security->getUser() === $subject) {
                     return true;
-                }
-                elseif ($user !== $subject){
+                } elseif ($user !== $subject) {
                     return false;
                 }
                 return true;
