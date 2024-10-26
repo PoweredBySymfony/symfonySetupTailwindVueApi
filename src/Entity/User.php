@@ -30,7 +30,7 @@ use Symfony\Component\Validator\Constraints\NotNull;
 #[ApiResource(
     operations: [
         new Get(),
-        new Delete(security: "is_granted('UTILISATEUR_EDIT', object) and object == user"),
+        new Delete(security: "is_granted('UTILISATEUR_DELETE', object)"),
         new Post(
             denormalizationContext: ["groups" => ["user:create"]],
             validationContext: ["groups" => ["Default", "user:create"]],
