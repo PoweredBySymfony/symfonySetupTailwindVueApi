@@ -80,7 +80,7 @@ class PartieConcert
      * @var Collection<int, Scene>
      */
     #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'partieConcerts')]
-    #[Groups(["scene:read", "partie_concert:read"])]
+    #[Groups(["partie_concert:read"])]
     private Collection $scenes;
 
     #[ORM\ManyToOne(inversedBy: 'partieConcerts')]
