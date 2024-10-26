@@ -67,24 +67,24 @@ class DataBaseFixtures extends Fixture
                 $user->addEvenementMusical($evenementMusical);
             }
 
-//            // Utiliser des scènes du pool existant
-//            foreach ($scenes as $scene) {
-//                $scene->setEvenementMusical($evenementMusical);
-//
-//                // Créer des parties de concert avec des utilisateurs en référence
-//                for ($k = 0; $k < 2; $k++) { // Réduit à 2 parties par scène pour limiter la complexité
-//                    $partieConcert = new PartieConcert();
-//                    $partieConcert->setNom($faker->sentence(3));
-//                    $randomUser = $this->getReference("user_" . rand(0, count($users) - 1));
-//                    $partieConcert->setArtiste($randomUser);
-//                    $partieConcert->setArtistePrincipal($faker->boolean);
-//                    $partieConcert->addScene($scene);
-//                    $partieConcert->setDateDeDebut(new \DateTime());
-//                    $partieConcert->setDateDeFin(new \DateTime('+1 hour'));
-//
-//                    $manager->persist($partieConcert);
-//                }
-//            }
+            // Utiliser des scènes du pool existant
+            foreach ($scenes as $scene) {
+                $scene->setEvenementMusical($evenementMusical);
+
+                // Créer des parties de concert avec des utilisateurs en référence
+                for ($k = 0; $k < 2; $k++) { // Réduit à 2 parties par scène pour limiter la complexité
+                    $partieConcert = new PartieConcert();
+                    $partieConcert->setNom($faker->sentence(3));
+                    $randomUser = $this->getReference("user_" . rand(0, count($users) - 1));
+                    $partieConcert->setArtiste($randomUser);
+                    $partieConcert->setArtistePrincipal($faker->boolean);
+                    $partieConcert->addScene($scene);
+                    $partieConcert->setDateDeDebut(new \DateTime());
+                    $partieConcert->setDateDeFin(new \DateTime('+1 hour'));
+
+                    $manager->persist($partieConcert);
+                }
+            }
 
             $manager->persist($evenementMusical);
         }

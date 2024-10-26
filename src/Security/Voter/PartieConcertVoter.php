@@ -40,23 +40,30 @@ final class PartieConcertVoter extends Voter
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case self::PARTIE_CONCERT_DELETE:
+                if ($subject == null) {
+                    return false;
+                } elseif ($this->security->isGranted('ROLE_ADMIN')) {
+                    return true;
+                }
+                elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getEvenementMusical()->getOrganisateur() == $user) {
+                    return true;
+                }
+                elseif ($user !== $subject) {
+                    return false;
+                }
+                break;
             case self::PARTIE_CONCERT_EDIT:
                 if ($subject == null) {
                     return false;
-                } elseif ($this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted('ROLE_ORGANISATEUR') || $this->security->isGranted('ROLE_ARTISTE')) {
-//                    je veux vérifier que l'utilisateur si il a le rôle artiste qu'il fasse bien partie de la partie concert
-                    if ($this->security->isGranted('ROLE_ARTISTE')) {
-                        if ($subject->getArtiste() !== $user) {
-                            return false;
-                        }
-                    }
+                }
+                elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getEvenementMusical()->getOrganisateur() == $user) {
                     return true;
-                } elseif ($user !== $subject) {
+                }
+                elseif ($user !== $subject) {
                     return false;
                 }
                 break;
         }
-
         return false;
     }
 }

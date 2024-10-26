@@ -39,15 +39,29 @@ final class SceneVoter extends Voter
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case self::SCENE_DELETE:
-            case self::SCENE_EDIT:
                 if ($subject == null) {
                     return false;
-                } elseif ($this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted('ROLE_ORGANISATEUR')) {
+                } elseif ($this->security->isGranted('ROLE_ADMIN')) {
                     return true;
-                } elseif ($user !== $subject) {
+                }
+                elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getEvenementMusical()->getOrganisateur() == $user) {
+                    return true;
+                }
+                elseif ($user !== $subject) {
                     return false;
                 }
                 break;
+            case self::SCENE_EDIT:
+                if ($subject == null) {
+                    return false;
+                }
+                elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getEvenementMusical()->getOrganisateur() == $user) {
+                    return true;
+                }
+                elseif ($user !== $subject) {
+                    return false;
+                }
+                return true;
         }
 
         return false;
