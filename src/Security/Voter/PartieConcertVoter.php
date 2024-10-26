@@ -45,7 +45,7 @@ final class PartieConcertVoter extends Voter
                 } elseif ($this->security->isGranted('ROLE_ADMIN')) {
                     return true;
                 }
-                elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getEvenementMusical()->getOrganisateur() == $user) {
+                elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getScene()->getEvenementMusical()->getOrganisateur() == $user) {
                     return true;
                 }
                 elseif ($user !== $subject) {
@@ -56,7 +56,7 @@ final class PartieConcertVoter extends Voter
                 if ($subject == null) {
                     return false;
                 }
-                elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getEvenementMusical()->getOrganisateur() == $user) {
+                elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getScene()->getEvenementMusical()->getOrganisateur() == $user) {
                     return true;
                 }
                 elseif ($user !== $subject) {

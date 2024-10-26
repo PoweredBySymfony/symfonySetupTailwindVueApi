@@ -78,7 +78,7 @@ class DataBaseFixtures extends Fixture
                     $randomUser = $this->getReference("user_" . rand(0, count($users) - 1));
                     $partieConcert->setArtiste($randomUser);
                     $partieConcert->setArtistePrincipal($faker->boolean);
-                    $partieConcert->addScene($scene);
+                    $partieConcert->setScene($scene);
                     $partieConcert->setDateDeDebut(new \DateTime());
                     $partieConcert->setDateDeFin(new \DateTime('+1 hour'));
 

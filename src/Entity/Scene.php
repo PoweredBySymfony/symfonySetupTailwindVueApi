@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\SceneRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -21,17 +23,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Post(
             normalizationContext: ["groups" => ["scene:read"]],
             denormalizationContext: ["groups" => ["scene:create"]],
-            security: "is_granted('SCENE_EDIT', object) and object == user",
+            security: "is_granted('SCENE_EDIT', object)",
             validationContext: ['groups' => ['scene:create']],
         ),
         new Patch(
             normalizationContext: ["groups" => ["scene:read"]],
             denormalizationContext: ["groups" => ["scene:update"]],
-            security: "is_granted('SCENE_EDIT', object) and object == user",
+            security: "is_granted('SCENE_EDIT', object)",
             validationContext: ['groups' => ['scene:update']],
         ),
         new Delete(
-            security: "is_granted('SCENE_DELETE', object) and object == user"
+            security: "is_granted('SCENE_DELETE', object)"
         )
     ],
     normalizationContext: ["groups" => ["scene:read"]]
@@ -61,9 +63,17 @@ class Scene
     #[Groups(["scene:read", "partie_concert:read", "scene:create"])]
     private ?EvenementMusical $evenementMusical = null;
 
-    #[ORM\ManyToOne(inversedBy: 'scenes')]
+    /**
+     * @var Collection<int, PartieConcert>
+     */
+    #[ORM\OneToMany(targetEntity: PartieConcert::class, mappedBy: 'scene')]
     #[Groups(["scene:read", "scene:create"])]
-    private ?PartieConcert $partieConcerts = null;
+    private Collection $partieConcerts;
+
+    public function __construct()
+    {
+        $this->partieConcerts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -106,15 +116,34 @@ class Scene
         return $this;
     }
 
-    public function getPartieConcerts(): ?PartieConcert
+    /**
+     * @return Collection<int, PartieConcert>
+     */
+    public function getPartieConcerts(): Collection
     {
         return $this->partieConcerts;
     }
 
-    public function setPartieConcerts(?PartieConcert $partieConcerts): static
+    public function addPartieConcert(PartieConcert $partieConcert): static
     {
-        $this->partieConcerts = $partieConcerts;
+        if (!$this->partieConcerts->contains($partieConcert)) {
+            $this->partieConcerts->add($partieConcert);
+            $partieConcert->setScene($this);
+        }
 
         return $this;
     }
+
+    public function removePartieConcert(PartieConcert $partieConcert): static
+    {
+        if ($this->partieConcerts->removeElement($partieConcert)) {
+            // set the owning side to null (unless already changed)
+            if ($partieConcert->getScene() === $this) {
+                $partieConcert->setScene(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
