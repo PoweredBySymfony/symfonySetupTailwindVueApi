@@ -3,3 +3,16 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+auth:
+    path: /api/auth
+    methods: ['POST']
+
+#Route pour rafraîchir notre JWT
+api_refresh_token:
+    path: /api/token/refresh
+    methods: ['POST']
+
+#Route pour invalider notre token de rafraîchissement (le supprimer). Utile pour se "déconnecter" réellement.
+api_token_invalidate:
+    path: /api/token/invalidate
+    methods: ['POST']
