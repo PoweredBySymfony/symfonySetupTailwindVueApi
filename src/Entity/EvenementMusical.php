@@ -45,8 +45,8 @@ use ApiPlatform\Metadata\Link;
          //   security: "is_granted('EVENEMENT_MUSICAL_DELETE', object) and object == user"
         )
     ],
-    normalizationContext: ['groups' => ['evenementMusical:read']]
-
+    normalizationContext: ['groups' => ['evenementMusical:read']],
+    order: ["dateDeDebut" => "DESC"]
 )]
 class EvenementMusical
 {

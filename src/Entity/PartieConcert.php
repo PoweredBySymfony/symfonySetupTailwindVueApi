@@ -50,6 +50,7 @@ use ApiPlatform\Metadata\Link;
         )
     ],
     normalizationContext: ["groups" => ["partie_concert:read"]],
+    order: ["dateDeDebut" => "DESC"]
 )]
 class PartieConcert
 {
