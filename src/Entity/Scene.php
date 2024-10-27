@@ -66,7 +66,7 @@ class Scene
     /**
      * @var Collection<int, PartieConcert>
      */
-    #[ORM\OneToMany(targetEntity: PartieConcert::class, mappedBy: 'scene')]
+    #[ORM\OneToMany(targetEntity: PartieConcert::class, mappedBy: 'scene', cascade: ['remove'],orphanRemoval: true)]
     #[Groups(["scene:read", "scene:create"])]
     private Collection $partieConcerts;
 
