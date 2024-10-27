@@ -60,6 +60,24 @@ Cela générera les éléments suivants :
 - 10 événements musicaux avec une date de début, de fin, un prix et une adresse générée. Les utilisateurs sont associés de manière aléatoire aux événements. 
 - Chaque scène est associée à des événements musicaux, et pour chaque scène, deux parties de concert sont créées. Ces parties de concert associent également un artiste aléatoire du pool d’utilisateurs et incluent des détails comme la date et l'heure.
 
+### Commandes
+
+Des commandes sont disponibles pour créer un utilisateur, lui ajouter ou supprimer un rôle
+avec les commandes suivantes :
+
+- Commande pour créer un user
+```
+php bin/console create:user achourl lisa@gmail.com Lisaachour2004! achour lisa ales 2004-09-14 
+```
+- Commande pour ajouter un rôle à un utilisateur
+```
+php bin/console giving:role achourl role_admin
+```
+- Commande pour supprimer un rôle à un utilisateur
+```
+php bin/console revoke:role achourl role_admin
+```
+
 ## Fonctionnement de l'api
 Pour accéder au swagger, simplement accéder à la route `/api` ([via ce lien](http://localhost/music_api/public/api) si vous utilisez le docker but3-web-container).
 
@@ -71,6 +89,8 @@ Pour accéder au swagger, simplement accéder à la route `/api` ([via ce lien](
 - `GET /api/users/{id}` - Récupère une ressource Utilisateur spécifique.
 - `DELETE /api/users/{id}` - Supprime une ressource Utilisateur.
 - `PATCH /api/users/{id}` - Met à jour une ressource Utilisateur.
+#### Sous-ressource Utilisateur
+- `GET /api/partie_concerts/{idPartieConcert}/users` - Récupère la collection des utilisateurs associés à une partie de concert spécifique.
 
 #### Securité Utilisateur 
 - Pour supprimer un utilisateur, il faut être connecté en tant qu'administrateur ou etre le propriétaire du compte.
@@ -83,6 +103,8 @@ Pour accéder au swagger, simplement accéder à la route `/api` ([via ce lien](
 - `GET /api/evenement_musicals/{id}` - Récupère une ressource EvenementMusical spécifique.
 - `DELETE /api/evenement_musicals/{id}` - Supprime une ressource EvenementMusical.
 - `PATCH /api/evenement_musicals/{id}` - Met à jour une ressource EvenementMusical.
+#### Sous-ressource EvenementMusical
+- `GET /api/scenes/{idScene}/evenements` - Récupère la collection des événements musicaux associés à une scène spécifique.
 
 #### Securité EvenementMusical
 - Pour supprimer un EvenementMusical, il faut être connecté en tant qu'administrateur ou etre le propriétaire de l'événement.
@@ -95,10 +117,13 @@ Pour accéder au swagger, simplement accéder à la route `/api` ([via ce lien](
 - `GET /api/partie_concerts/{id}` - Récupère une ressource PartieConcert spécifique.
 - `DELETE /api/partie_concerts/{id}` - Supprime une ressource PartieConcert.
 - `PATCH /api/partie_concerts/{id}` - Met à jour une ressource PartieConcert.
+#### Sous-ressource PartieConcert
+- `GET /api/scenes/{idScene}/partieConcerts` - Récupère la collection des parties de concert associées à une scène spécifique.
 
 #### Securité PartieConcert
 - Pour supprimer une PartieConcert, il faut être connecté en tant qu'administrateur ou etre l'organisateur de la partie de concert.
 - Pour mettre à jour une PartieConcert, il faut être connecté et etre l'organisateur de l'évènement auquel est rattaché la partie de concert.
+
 
 ### Scène
 - `GET /api/scenes` - Récupère la collection de ressources Scène.
@@ -113,6 +138,8 @@ Pour accéder au swagger, simplement accéder à la route `/api` ([via ce lien](
 
 ### Authentification
 - `POST /api/auth` - Crée un jeton utilisateur.
+- `POST /api/token/refresh` - Rafraichît le jeton utilisateur
+- `POST api/token/invalidate` - Supprimer le jeton utilisateur
 
 ## Securisation de l'API avec JWT
 
