@@ -123,69 +123,6 @@ Pour accéder au swagger, simplement accéder à la route `/api` ([via ce lien](
 ```
 
 
-
-## Fonctionnalités et contraintes obligatoires
-### Gestion des utilisateurs
-- [X] **Inscription** : L'utilisateur peut s'inscrire en fournissant les informations suivantes : login, email, mot de passe et visibilité du profil (visible/masqué).
-  - [X] **Code unique** : Lors de l'inscription, l'utilisateur peut choisir de saisir un code unique ou laisser l'application en générer un aléatoirement. Ce code est vérifié en temps réel pour éviter les duplications (utilisation de JavaScript natif pour les requêtes asynchrones).
-  - [X] **Visibilité du profil** : Les utilisateurs peuvent définir leur profil comme visible (listé) ou masqué (non listé). Les profils visibles apparaissent sur la page principale du site.
-
-- [X] **Affichage des profils** :
-  - La page principale liste tous les profils visibles.
-  - Chaque profil est accessible via une URL unique, par exemple `/profil/{code}`, que le profil soit visible ou masqué.
-  - Une route renvoie les informations d’un profil au format JSON pour une utilisation future dans d'autres projets.
-
-- [X] **Gestion des données de profil** :
-  - Le profil de l'utilisateur contient la dernière date de modification et la dernière date de connexion, automatiquement mises à jour.
-
-### Édition du profil
-- [X] Les utilisateurs peuvent **éditer** leur profil pour ajouter des informations supplémentaires (numéro de téléphone, pays, adresse, réseaux sociaux, etc.).
-  - [X] Le **formulaire d'édition** est pré-rempli avec les informations actuelles de l'utilisateur.
-  - [X] Les utilisateurs peuvent modifier leur code unique ou demander la génération d’un nouveau code aléatoire.
-  - [X] Les utilisateurs peuvent supprimer leur profil ou changer la visibilité de leur profil (visible/masqué).
-
-### Rôle d'administrateur
-- [X] Certains utilisateurs ont le rôle d'administrateur, leur permettant de :
-  - Visualiser les profils masqués sur la page principale.
-  - Supprimer des profils d'autres utilisateurs, sauf ceux qui ont également un rôle d'administrateur.
-
-### Maintenance du site
-- [X] Un **mode maintenance** peut être activé via le fichier `services.yaml`, redirigeant toutes les pages vers un message d'indisponibilité.
-
-### Création d'utilisateurs via la ligne de commande
-- [X] Une commande Symfony permet de **créer des utilisateurs** depuis le terminal avec les informations nécessaires et le choix du rôle (normal/administrateur).
-
-### Limitations sur le JavaScript
-- [X] L'utilisation de JavaScript est limitée au JavaScript natif sans framework.
-
-## Fonctionnalités pour le Premier Rendu (27 octobre 2024)
-
-Pour ce premier rendu intermédiaire, l'API doit répondre aux critères suivants basés sur le TD4 :
-
-### Gestion d'utilisateurs
-- [X] Implémentation de la ressource `/utilisateurs` permettant la gestion des utilisateurs.
-
-### Groupes de normalisation, dénormalisation et validation
-- [X] Mise en place de groupes de normalisation, dénormalisation, et validation pour structurer les données des utilisateurs.
-
-### Gestion des sous-ressources
-- [X] Exemple de sous-ressource : `/utilisateurs/{id}/evenements`, permettant la gestion des publications associées aux utilisateurs.
-
-### Prise en charge des verbes HTTP
-- [X] Support pour les verbes HTTP essentiels : `GET`, `POST`, `PATCH`, `DELETE`.
-
-### Authentification par JWT
-- [X] Authentification avec JWT pour sécuriser les sessions. Les tokens sont envoyés dans les cookies pour faciliter l'identification des utilisateurs.
-
-### StateProcessor
-- [X] Création d'un **StateProcessor** pour gérer des états spécifiques lors des opérations sur les ressources, par exemple, pour marquer automatiquement un utilisateur comme auteur d'une publication.
-
-### Sécurité des actions
-- [X] Mise en place de restrictions de sécurité pour les actions, garantissant que seules les opérations autorisées sont exécutables par les utilisateurs.
-
-### Générateur de groupes
-- [X] Génération automatique des groupes de validation, normalisation, et dénormalisation pour assurer la cohérence des données.
-
 ### Répartition du travail
 Dans les grandes lignes:
 - Xavier T.:
@@ -196,12 +133,13 @@ Dans les grandes lignes:
    - exposition des ressources
    - gestion des erreurs
 - Lisa A.:
-   - mise en place des processors evenement, scene, partie concert
+   - mise en place du state processor user
    - générateur de groupes
+   - normalisation / denormalisation des ressources
    - gestion des sous-ressources
-   - authentification par JWT
-   - gestiond des erreurs
-[//]: # (TODO: Ajouter les tâches de Lisa)
+   - authentification par JWT + refresh token + invalidate
+   - gestions des erreurs
+   - commandes crée un user, ajouter un role, supprimer un role
 - Petit Maxime.:
    - mise en place des processors evenement, scene
    - gestion de verbes Api
