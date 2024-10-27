@@ -16,11 +16,20 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\Link;
 
 #[ORM\Entity(repositoryClass: PartieConcertRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(),
+        new GetCollection(
+            uriTemplate: '/scenes/{idScene}/partieConcerts',
+            uriVariables: [
+                'idScene' => new Link(
+                    fromProperty: 'partieConcerts',
+                    fromClass: Scene::class
+                ),
+            ],
+        ),
         new Get(),
         new Post(
             normalizationContext: ["groups" => ["partie_concert:read"]],
@@ -41,6 +50,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         )
     ],
     normalizationContext: ["groups" => ["partie_concert:read"]],
+    order: ["dateDeDebut" => "DESC"]
 )]
 class PartieConcert
 {
@@ -66,14 +76,12 @@ class PartieConcert
     #[Groups(["scene:read", "partie_concert:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     #[Assert\NotBlank(groups: ['partie_concert:create'])]
     #[Assert\NotNull(groups: ['partie_concert:create'])]
-    #[Assert\DateTime(groups: ['partie_concert:create'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(["scene:read", "partie_concert:read", 'user:read', 'partie_concert:create', 'partie_concert:update'])]
     #[Assert\NotBlank(groups: ['partie_concert:create'])]
     #[Assert\NotNull(groups: ['partie_concert:create'])]
-    #[Assert\DateTime(groups: ['partie_concert:create'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
 

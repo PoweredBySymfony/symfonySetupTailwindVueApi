@@ -24,13 +24,14 @@ class AuthenticationSuccessListener
         $user = $event->getUser();
 
         $data['id'] = $user->getId();
+        $data['login'] = $user->getLogin();
         $data['email'] = $user->getEmail();
         $data['username'] = $user->getLogin();
 //        $data['premium'] = $user->isPremium();
 
 
-//Récupération des donnés contenues de le JWT - A compléter
-//On décode le jwt qui est déjà encodé, à ce stade, afin de récupérer les informations qui nous intéressent.
+        //Récupération des donnés contenues de le JWT - A compléter
+        //On décode le jwt qui est déjà encodé, à ce stade, afin de récupérer les informations qui nous intéressent.
         $jwt = $this->jwtManager->parse($data['token']);
         $data['token_exp'] = $jwt['exp'];
 

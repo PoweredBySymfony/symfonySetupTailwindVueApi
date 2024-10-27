@@ -16,11 +16,17 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\Link;
 
 #[ORM\Entity(repositoryClass: EvenementMusicalRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(),
+        new GetCollection(
+            uriTemplate: '/scenes/{idScene}/evenements',
+            uriVariables: [
+                'idScene' => new Link(toProperty: 'scenes', fromClass: Scene::class)
+            ],
+        ),
         new Get(),
         new Post(
             normalizationContext: ["groups" => ["evenementMusical:read"]],
@@ -40,7 +46,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: "is_granted('EVENEMENT_MUSICAL_DELETE', object)"
         )
     ],
-    normalizationContext: ['groups' => ['evenementMusical:read']]
+    normalizationContext: ['groups' => ['evenementMusical:read']],
+    order: ["dateDeDebut" => "DESC"]
 )]
 class EvenementMusical
 {
@@ -60,21 +67,18 @@ class EvenementMusical
     #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
-    #[Assert\DateTime(groups: ['evenement_musical:create'])]
     private ?\DateTimeInterface $dateDeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
-    #[Assert\DateTime(groups: ['evenement_musical:create'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
     #[ORM\Column]
     #[Groups(["scene:read", "evenementMusical:read", 'user:read', 'event_music:create', 'event_music:update'])]
     #[Assert\NotBlank(groups: ['evenement_musical:create'])]
     #[Assert\NotNull(groups: ['evenement_musical:create'])]
-//    fait une vérif pour que les nombre soit toujours positif ou égal a 0
     #[Assert\PositiveOrZero(groups: ['evenement_musical:create'])]
     #[Assert\Type(type: 'float', groups: ['evenement_musical:create'])]
     private ?float $prix = null;
@@ -89,7 +93,7 @@ class EvenementMusical
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'evenementMusicals')]
-    #[Groups(['evenementMusical:read', 'event_music:create', 'event_music:update'])]
+    #[Groups(['evenementMusical:read','event_music:create', 'event_music:update'])]
     private Collection $participants;
 
     /**
