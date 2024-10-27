@@ -25,19 +25,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Post(
             normalizationContext: ["groups" => ["partie_concert:read"]],
             denormalizationContext: ["groups" => ["partie_concert:create"]],
-            security: "is_granted('PARTIE_CONCERT_EDIT', object) and object == user",
+            security: "is_granted('PARTIE_CONCERT_EDIT', object)",
             validationContext: ['groups' => ['partie_concert:create']],
             processor: EvenementMusicalProcessor::class,
         ),
         new Patch(
             normalizationContext: ["groups" => ["partie_concert:read"]],
             denormalizationContext: ["groups" => ["partie_concert:update"]],
-            security: "is_granted('PARTIE_CONCERT_EDIT', object) and object == user",
+            security: "is_granted('PARTIE_CONCERT_EDIT', object)",
             validationContext: ['groups' => ['partie_concert:update']],
             processor: EvenementMusicalProcessor::class,
         ),
         new Delete(
-            security: "is_granted('PARTIE_CONCERT_DELETE', object) and object == user"
+            security: "is_granted('PARTIE_CONCERT_DELETE', object)"
         )
     ],
     normalizationContext: ["groups" => ["partie_concert:read"]],
@@ -76,22 +76,17 @@ class PartieConcert
     #[Assert\DateTime(groups: ['partie_concert:create'])]
     private ?\DateTimeInterface $dateDeFin = null;
 
-    /**
-     * @var Collection<int, Scene>
-     */
-    #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'partieConcerts')]
-    #[Groups(["partie_concert:read"])]
-    private Collection $scenes;
 
     #[ORM\ManyToOne(inversedBy: 'partieConcerts')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(["partie_concert:read", 'partie_concert:create', 'partie_concert:update'])]
     private ?User $artiste = null;
 
+    #[ORM\ManyToOne(inversedBy: 'partieConcerts')]
+    private ?Scene $scene = null;
+
     public function __construct()
-    {
-        $this->scenes = new ArrayCollection();
-    }
+    {}
 
     public function getId(): ?int
     {
@@ -146,36 +141,6 @@ class PartieConcert
         return $this;
     }
 
-    /**
-     * @return Collection<int, Scene>
-     */
-    public function getScenes(): Collection
-    {
-        return $this->scenes;
-    }
-
-    public function addScene(Scene $scene): static
-    {
-        if (!$this->scenes->contains($scene)) {
-            $this->scenes->add($scene);
-            $scene->setPartieConcerts($this);
-        }
-
-        return $this;
-    }
-
-    public function removeScene(Scene $scene): static
-    {
-        if ($this->scenes->removeElement($scene)) {
-            // set the owning side to null (unless already changed)
-            if ($scene->getPartieConcerts() === $this) {
-                $scene->setPartieConcerts(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getArtiste(): ?User
     {
         return $this->artiste;
@@ -184,6 +149,18 @@ class PartieConcert
     public function setArtiste(?User $artiste): static
     {
         $this->artiste = $artiste;
+
+        return $this;
+    }
+
+    public function getScene(): ?Scene
+    {
+        return $this->scene;
+    }
+
+    public function setScene(?Scene $scene): static
+    {
+        $this->scene = $scene;
 
         return $this;
     }

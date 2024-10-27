@@ -38,13 +38,25 @@ final class EvenementMusicalVoter extends Voter
 
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case self::EVENEMENT_MUSICAL_DELETE:
             case self::EVENEMENT_MUSICAL_EDIT:
                 if ($subject == null) {
                     return false;
-                } elseif ($this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted('ROLE_ORGANISATEUR')) {
+                } elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getOrganisateur() == $user) {
                     return true;
                 } elseif ($user !== $subject) {
+                    return false;
+                }
+                return true;
+            case self::EVENEMENT_MUSICAL_DELETE:
+                if ($subject == null) {
+                    return false;
+                } elseif ($this->security->isGranted('ROLE_ORGANIZER') && $subject->getOrganisateur() == $user) {
+                    return true;
+                }
+                elseif ($this->security->isGranted('ROLE_ADMIN')) {
+                    return true;
+                }
+                elseif ($user !== $subject) {
                     return false;
                 }
                 return true;
