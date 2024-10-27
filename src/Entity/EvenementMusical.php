@@ -95,9 +95,13 @@ class EvenementMusical
     /**
      * @var Collection<int, Scene>
      */
-    #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'evenementMusical')]
-    #[Groups(['evenementMusical:read','event_music:create','event_music:update'])]
+    /**
+     * @var Collection<int, Scene>
+     */
+    #[ORM\OneToMany(targetEntity: Scene::class, mappedBy: 'evenementMusical', cascade: ['remove'], orphanRemoval: true)]
+    #[Groups(['evenementMusical:read', 'event_music:create', 'event_music:update'])]
     private Collection $scenes;
+
 
     #[ORM\ManyToOne(inversedBy: 'organisateurEvenementMuscial')]
     private ?User $organisateur = null;
