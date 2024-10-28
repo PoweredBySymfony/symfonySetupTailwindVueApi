@@ -42,20 +42,22 @@ final class UserVoter extends Voter
                 // return true or false
                 if ($subject == null) {
                     return false;
-                } elseif ($this->security->isGranted('ROLE_ADMIN')) {
+                }
+                elseif ($this->security->isGranted('ROLE_ADMIN')) {
                     return true;
-                } elseif ($user !== $subject) {
+                }
+                elseif ($user !== $subject){
                     return false;
                 }
                 return true;
             case self::USER_DELETE:
-                // logic to determine if the user can DELETE
-                // return true or false
                 if ($subject == null) {
                     return false;
-                } elseif ($this->security->isGranted('ROLE_ADMIN') || $this->security->getUser() === $subject) {
+                }
+                elseif ($this->security->isGranted('ROLE_ADMIN')){
                     return true;
-                } elseif ($user !== $subject) {
+                }
+                elseif ($user !== $subject){
                     return false;
                 }
                 return true;

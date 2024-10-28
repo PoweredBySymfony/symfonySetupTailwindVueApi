@@ -31,7 +31,7 @@ use ApiPlatform\Metadata\Link;
 #[ApiResource(
     operations: [
         new Get(),
-        new Delete(security: "is_granted('UTILISATEUR_DELETE', object)"),
+        new Delete(security: "is_granted('UTILISATEUR_DELETE', object)", processor: UserProcessor::class),
         new Post(
             denormalizationContext: ["groups" => ["user:create"]],
             validationContext: ["groups" => ["Default", "user:create"]],
@@ -124,7 +124,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     // Associez les autres attributs (collections) aux groupes de lecture
-    #[ORM\ManyToMany(targetEntity: EvenementMusical::class, mappedBy: 'participants',)]
+    #[ORM\ManyToMany(targetEntity: EvenementMusical::class, mappedBy: 'participants')]
     #[Groups('user:read')]
     private Collection $evenementMusicals;
 
