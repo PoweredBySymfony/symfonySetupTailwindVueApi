@@ -21,6 +21,7 @@ use ApiPlatform\Metadata\Link;
 #[ORM\Entity(repositoryClass: EvenementMusicalRepository::class)]
 #[ApiResource(
     operations: [
+        new GetCollection(),
         new GetCollection(
             uriTemplate: '/scenes/{idScene}/evenements',
             uriVariables: [

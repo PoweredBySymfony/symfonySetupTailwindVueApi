@@ -30,6 +30,7 @@ use ApiPlatform\Metadata\Link;
 #[ORM\UniqueConstraint(name: "UNIQ_IDENTIFIER_EMAIL", fields: ["email"])]
 #[ApiResource(
     operations: [
+        new GetCollection(),
         new Get(),
         new Delete(security: "is_granted('UTILISATEUR_DELETE', object)", processor: UserProcessor::class),
         new Post(
