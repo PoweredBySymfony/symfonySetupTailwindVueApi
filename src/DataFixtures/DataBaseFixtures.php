@@ -25,7 +25,7 @@ class DataBaseFixtures extends Fixture
         $faker = Factory::create();
         $roles = ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_ORGANIZER', 'ROLE_ARTIST'];
 
-        // Créer un pool de 10 utilisateurs avec des rôles aléatoires et les stocker dans un tableau
+        // Créer 10 utilisateurs de manière aléatoire
         $users = [];
         for ($j = 0; $j < 10; $j++) {
             $user = new User();
@@ -42,16 +42,6 @@ class DataBaseFixtures extends Fixture
             $manager->persist($user);
         }
 
-        // Créer un pool de 5 scènes et les stocker dans un tableau
-        $scenes = [];
-        for ($j = 0; $j < 5; $j++) {
-            $scene = new Scene();
-            $scene->setNom('Scene ' . $j);
-            $scene->setNombreMaxParticipants(rand(100, 1000));
-            $scenes[] = $scene;
-            $manager->persist($scene);
-        }
-
         // Créer 10 événements musicaux
         for ($i = 0; $i < 10; $i++) {
             $evenementMusical = new EvenementMusical();
@@ -62,30 +52,49 @@ class DataBaseFixtures extends Fixture
             $evenementMusical->setAdresse($faker->address);
             $evenementMusical->setOrganisateur($this->getReference("user_" . rand(0, count($users) - 1)));
 
-            // Associer des utilisateurs aléatoires à cet événement musical
-            foreach (array_slice($users, 0, rand(2, 5)) as $user) {
-                $user->addEvenementMusical($evenementMusical);
+            // Ajouter un nombre aléatoire d'utilisateurs comme participants à l'événement
+            $participants = array_slice($users, 0, rand(3, 6)); // De 3 à 6 participants
+            foreach ($participants as $user) {
+                $evenementMusical->addParticipant($user);
             }
 
-            // Utiliser des scènes du pool existant
-            foreach ($scenes as $scene) {
-                $scene->setEvenementMusical($evenementMusical);
+            // Créer 3 scènes pour chaque événement
+            $scenes = [];
+            for ($j = 0; $j < 3; $j++) {
+                $scene = new Scene();
+                $scene->setNom('Scene ' . $j);
+                $scene->setNombreMaxParticipants(rand(100, 1000));
+                $scenes[] = $scene;
+                $manager->persist($scene);
+            }
 
-                // Créer des parties de concert avec des utilisateurs en référence
-                for ($k = 0; $k < 2; $k++) { // Réduit à 2 parties par scène pour limiter la complexité
+            // Créer 5 parties de concert pour chaque scène
+            foreach ($scenes as $scene) {
+                for ($k = 0; $k < 5; $k++) {
                     $partieConcert = new PartieConcert();
                     $partieConcert->setNom($faker->sentence(3));
-                    $randomUser = $this->getReference("user_" . rand(0, count($users) - 1));
-                    $partieConcert->setArtiste($randomUser);
-                    $partieConcert->setArtistePrincipal($faker->boolean);
+                    $partieConcert->setArtistePrincipal($faker->boolean); // Un artiste principal
                     $partieConcert->setScene($scene);
                     $partieConcert->setDateDeDebut(new \DateTime());
                     $partieConcert->setDateDeFin(new \DateTime('+1 hour'));
+
+                    // Assigner des artistes (utilisateurs) à la partie de concert
+                    $numArtistes = rand(1, 3); // 1 à 3 artistes par partie de concert
+                    for ($l = 0; $l < $numArtistes; $l++) {
+                        $artiste = $this->getReference("user_" . rand(0, count($users) - 1)); // Sélectionne un artiste aléatoire
+                        $partieConcert->setArtiste($artiste); // Assigner l'artiste à la partie
+                    }
 
                     $manager->persist($partieConcert);
                 }
             }
 
+            // Associer les scènes à l'événement musical
+            foreach ($scenes as $scene) {
+                $scene->setEvenementMusical($evenementMusical);
+            }
+
+            // Persister l'événement musical
             $manager->persist($evenementMusical);
         }
 
