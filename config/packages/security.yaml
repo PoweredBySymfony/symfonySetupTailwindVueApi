@@ -24,8 +24,6 @@ security:
       entry_point: jwt
       refresh_jwt:
         check_path: api_refresh_token
-      logout:
-        path: api_token_invalidate
       lazy: true
       #L'application est sans état (pas de session)
       stateless: true
@@ -42,6 +40,9 @@ security:
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
       jwt: ~
+      logout:
+        path: api_token_invalidate
+        delete_cookies: [ 'BEARER' ]
 
 
   # Easy way to control access for large sections of your site
