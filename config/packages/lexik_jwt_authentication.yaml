@@ -13,3 +13,7 @@ lexik_jwt_authentication:
             enabled: true
             #Nom du cookie
             name: BEARER
+    token_ttl: 15 # in seconds, default is 3600
+    blocklist_token:
+        enabled: true
+        cache: cache.app
