@@ -51,7 +51,7 @@ use ApiPlatform\Metadata\Link;
                 'idPartieConcert' => new Link(fromProperty: 'artiste', fromClass: PartieConcert::class)
             ],
             security: "is_granted('ROLE_ADMIN')",
-        )
+        ),
     ],
     normalizationContext: ["groups" => ["user:read"]],
 )]
@@ -98,7 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
-    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read', 'evenementMusical:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
