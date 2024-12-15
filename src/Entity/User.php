@@ -107,12 +107,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?string $prenom = null;
 
-//    #[ORM\Column(type: Types::TEXT)]
-//    #[Assert\NotBlank(groups: ["user:create"])]
-//    #[Assert\NotNull(groups: ["user:create"])]
-//    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
-//    private ?string $villeHabitation = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
