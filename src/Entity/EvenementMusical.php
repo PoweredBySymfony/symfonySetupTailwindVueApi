@@ -111,10 +111,17 @@ class EvenementMusical
     #[ORM\ManyToOne(inversedBy: 'organisateurEvenementMuscial')]
     private ?User $organisateur = null;
 
+    /**
+     * @var Collection<int, GenreMusical>
+     */
+    #[ORM\ManyToMany(targetEntity: GenreMusical::class, inversedBy: 'evenementMusicals')]
+    private Collection $genreMuscical;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
         $this->scenes = new ArrayCollection();
+        $this->genreMuscical = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -244,6 +251,30 @@ class EvenementMusical
     public function setOrganisateur(?User $organisateur): static
     {
         $this->organisateur = $organisateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GenreMusical>
+     */
+    public function getGenreMuscical(): Collection
+    {
+        return $this->genreMuscical;
+    }
+
+    public function addGenreMuscical(GenreMusical $genreMuscical): static
+    {
+        if (!$this->genreMuscical->contains($genreMuscical)) {
+            $this->genreMuscical->add($genreMuscical);
+        }
+
+        return $this;
+    }
+
+    public function removeGenreMuscical(GenreMusical $genreMuscical): static
+    {
+        $this->genreMuscical->removeElement($genreMuscical);
 
         return $this;
     }

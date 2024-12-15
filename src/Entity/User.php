@@ -107,11 +107,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
     private ?string $prenom = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(groups: ["user:create"])]
-    #[Assert\NotNull(groups: ["user:create"])]
-    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
-    private ?string $villeHabitation = null;
+//    #[ORM\Column(type: Types::TEXT)]
+//    #[Assert\NotBlank(groups: ["user:create"])]
+//    #[Assert\NotNull(groups: ["user:create"])]
+//    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
+//    private ?string $villeHabitation = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(groups: ["user:create"])]
@@ -138,6 +138,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: EvenementMusical::class, mappedBy: 'organisateur')]
     private Collection $organisateurEvenementMuscial;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Ville $villeHabitation = null;
 
     public function __construct()
     {
@@ -268,18 +272,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getVilleHabitation(): ?string
-    {
-        return $this->villeHabitation;
-    }
-
-    public function setVilleHabitation(string $villeHabitation): static
-    {
-        $this->villeHabitation = $villeHabitation;
-
-        return $this;
-    }
-
     public function getDateDeNaissance(): ?\DateTimeInterface
     {
         return $this->dateDeNaissance;
@@ -391,6 +383,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $organisateurEvenementMuscial->setOrganisateur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getVilleHabitation(): ?Ville
+    {
+        return $this->villeHabitation;
+    }
+
+    public function setVilleHabitation(?Ville $villeHabitation): static
+    {
+        $this->villeHabitation = $villeHabitation;
 
         return $this;
     }
