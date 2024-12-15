@@ -29,7 +29,8 @@ class Ville
     #[ORM\Column]
     private ?int $codePostal = null;
 
-    #[ORM\Column(length: 255)]
+//    uniquement pour ville francais, champs pas obligatoire
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $departement = null;
 
     #[ORM\Column(length: 255)]
