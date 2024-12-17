@@ -88,7 +88,7 @@ class PartieConcert
 
     #[ORM\ManyToOne(inversedBy: 'partieConcerts')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(["partie_concert:read", 'partie_concert:create', 'partie_concert:update'])]
+    #[Groups(['partie_concert:read', 'partie_concert:create', 'partie_concert:update', 'evenementMusical:read'])]
     private ?User $artiste = null;
 
     #[ORM\ManyToOne(inversedBy: 'partieConcerts')]

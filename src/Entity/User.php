@@ -51,7 +51,7 @@ use ApiPlatform\Metadata\Link;
                 'idPartieConcert' => new Link(fromProperty: 'artiste', fromClass: PartieConcert::class)
             ],
             security: "is_granted('ROLE_ADMIN')",
-        )
+        ),
     ],
     normalizationContext: ["groups" => ["user:read"]],
 )]
