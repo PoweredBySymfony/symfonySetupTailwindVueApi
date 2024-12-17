@@ -67,7 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
     #[Assert\Length(min: 4, max: 20, minMessage: "Login trop court", maxMessage: "Login trop long")]
-    #[Groups(['user:read', 'user:create',"partie_concert:read"])]
+    #[Groups(['user:read', 'user:create',"partie_concert:read",'evenementMusical:read'])]
     private ?string $login = null;
 
     #[ORM\Column]
@@ -92,13 +92,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
     #[Assert\Email(groups: ["user:create"])]
-    #[Groups(['user:read','user:create', 'user:update',"partie_concert:read"])]
+    #[Groups(['user:read','user:create', 'user:update',"partie_concert:read",'evenementMusical:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
-    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read'])]
+    #[Groups(['user:create', 'user:update',"partie_concert:read",'user:read','evenementMusical:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
@@ -134,7 +134,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $organisateurEvenementMuscial;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
+//    #[Assert\NotBlank(groups: ["user:create"])]
+//    #[Assert\NotNull(groups: ["user:create"])]
+    #[Groups(['user:read'])]
+    #[ApiProperty(readable: false, writable: false)]
     private ?Ville $villeHabitation = null;
 
     public function __construct()
