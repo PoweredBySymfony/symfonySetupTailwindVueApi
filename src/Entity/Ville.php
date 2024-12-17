@@ -11,7 +11,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ORM\Entity(repositoryClass: VilleRepository::class)]
-#[ApiResource]
 class Ville
 {
     #[ORM\Id]
