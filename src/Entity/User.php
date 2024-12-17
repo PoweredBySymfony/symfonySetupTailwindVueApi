@@ -135,8 +135,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
-//    #[Assert\NotBlank(groups: ["user:create"])]
-//    #[Assert\NotNull(groups: ["user:create"])]
     #[Groups(['user:read'])]
     #[ApiProperty(readable: false, writable: false)]
     private ?Ville $villeHabitation = null;
