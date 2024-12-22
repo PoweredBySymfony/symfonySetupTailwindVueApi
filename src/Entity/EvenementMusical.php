@@ -120,15 +120,15 @@ class EvenementMusical
     /**
      * @var Collection<int, GenreMusical>
      */
-    #[ORM\ManyToOne(targetEntity: GenreMusical::class, inversedBy: 'evenementMusicals')]
+    #[ORM\ManyToMany(targetEntity: GenreMusical::class, inversedBy: 'evenementMusicals')]
     #[Groups(['evenementMusical:read'])]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?GenreMusical $genreMusical = null;
+    private Collection $genreMusical;
 
     public function __construct()
     {
         $this->participants = new ArrayCollection();
         $this->scenes = new ArrayCollection();
+        $this->genreMusical = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -263,26 +263,26 @@ class EvenementMusical
     }
 
     /**
-     * @return GenreMusical
+     * @return Collection<int, GenreMusical>
      */
-    public function getGenreMusical(): GenreMusical
+    public function getGenreMusical(): Collection
     {
         return $this->genreMusical;
     }
 
-//    public function addGenreMuscical(GenreMusical $genreMuscical): static
-//    {
-//        if (!$this->genreMusical->contains($genreMuscical)) {
-//            $this->genreMusical->add($genreMuscical);
-//        }
-//
-//        return $this;
-//    }
-//
-//    public function removeGenreMuscical(GenreMusical $genreMuscical): static
-//    {
-//        $this->genreMusical->removeElement($genreMuscical);
-//
-//        return $this;
-//    }
+    public function addGenreMuscical(GenreMusical $genreMuscical): static
+    {
+        if (!$this->genreMusical->contains($genreMuscical)) {
+            $this->genreMusical->add($genreMuscical);
+        }
+
+        return $this;
+    }
+
+    public function removeGenreMuscical(GenreMusical $genreMuscical): static
+    {
+        $this->genreMusical->removeElement($genreMuscical);
+
+        return $this;
+    }
 }

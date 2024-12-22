@@ -72,10 +72,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ApiProperty(readable: false,writable: true)]
+    #[ApiProperty(readable: false)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
-    #[Groups(["user:create","utilisateur:update"])]
+    #[Groups(["user:create","user:update"])]
     #[Assert\Length(min: 8, max: 30, minMessage: "Le texte doit contenir au moins 8 caractères.", maxMessage: "Le texte ne peut pas dépasser 30 caractères.")]
     #[Assert\Regex(pattern: "#^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,30}$#", message: "Format non respecté. Assurez-vous d\"inclure au moins une lettre minuscule, une lettre majuscule et un chiffre.")]
     private ?string $plainPassword = null;
@@ -110,6 +110,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
     #[Groups(['user:create',"partie_concert:read",'user:read'])]
+    #[ApiProperty( writable: true)]
     private ?\DateTimeInterface $dateDeNaissance = null;
 
     #[ORM\Column]
@@ -132,8 +133,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['user:read','user:create','user:update'])]
-    #[ApiProperty(readable: true, writable: true)]
+    #[Groups(['user:read'])]
+    #[ApiProperty(readable: true, writable: false)]
     private ?Ville $villeHabitation = null;
 
     public function __construct()

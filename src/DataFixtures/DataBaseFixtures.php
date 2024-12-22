@@ -74,6 +74,16 @@ class DataBaseFixtures extends Fixture
             $evenementMusical->setPrix($faker->randomFloat(2, 10, 100));
             $evenementMusical->setAdresse($faker->address);
 
+            // Affecter des genres musicaux aléatoires
+            $nombreGenres = rand(1, 4);
+            $genresAffectes = $faker->randomElements($genresMusicaux, $nombreGenres);
+            foreach ($genresAffectes as $genre) {
+                $newGenre = new GenreMusical();
+                $newGenre->setNom($genre);
+                $manager->persist($newGenre);
+                $evenementMusical->addGenreMuscical($newGenre);
+            }
+
             // Ajouter des participants à cet événement
             $numParticipants = rand(3, 6); // De 3 à 6 participants par événement
             for ($j = 0; $j < $numParticipants; $j++) {
