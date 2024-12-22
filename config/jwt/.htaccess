@@ -1,2 +1,2 @@
 options -Indexes
-Deny from all
+Deny from
