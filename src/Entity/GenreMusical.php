@@ -24,7 +24,7 @@ class GenreMusical
     /**
      * @var Collection<int, EvenementMusical>
      */
-    #[ORM\ManyToMany(targetEntity: EvenementMusical::class, mappedBy: 'genreMuscical')]
+    #[ORM\OneToMany(targetEntity: EvenementMusical::class, mappedBy: 'genreMuscical')]
     private Collection $evenementMusicals;
 
     public function __construct()

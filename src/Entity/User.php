@@ -109,7 +109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(groups: ["user:create"])]
     #[Assert\NotNull(groups: ["user:create"])]
-    #[Groups(['user:create',"partie_concert:read",'user:read','user:update'])]
+    #[Groups(['user:create',"partie_concert:read",'user:read'])]
     private ?\DateTimeInterface $dateDeNaissance = null;
 
     #[ORM\Column]
@@ -132,8 +132,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['user:read'])]
-    #[ApiProperty(readable: true, writable: false)]
+    #[Groups(['user:read','user:create','user:update'])]
+    #[ApiProperty(readable: true, writable: true)]
     private ?Ville $villeHabitation = null;
 
     public function __construct()
