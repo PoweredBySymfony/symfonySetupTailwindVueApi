@@ -46,7 +46,6 @@ use ApiPlatform\Metadata\Link;
         new Delete(
             security: "is_granted('EVENEMENT_MUSICAL_DELETE', object)"
         ),
-//        récupère tout les evenement auquel l'utilisateur participe
         new GetCollection(
             uriTemplate: '/users/{id}/evenements',
             uriVariables: [
@@ -55,7 +54,7 @@ use ApiPlatform\Metadata\Link;
         ),
     ],
     normalizationContext: ['groups' => ['evenementMusical:read']],
-    order: ["dateDeDebut" => "DESC"]
+    order: ["dateDeDebut" => "ASC"]
 )]
 class EvenementMusical
 {

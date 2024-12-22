@@ -3,43 +3,67 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\VilleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VilleRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Post(
+            denormalizationContext: ['groups' => ['ville:create']],
+            validationContext: ['groups' => ['Default', 'ville:create']]
+        ),
+        new Patch(
+            denormalizationContext: ['groups' => ['ville:update']],
+            validationContext: ['groups' => ['Default', 'ville:update']]
+        ),
+    ],
+    normalizationContext: ['groups' => ['ville:read']],
+)]
 class Ville
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('user:read')]
+    #[Groups(['user:read', 'ville:read', 'ville:create', 'ville:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('user:read')]
+    #[Assert\NotBlank(groups: ['ville:create', 'ville:update'])]
+    #[Assert\NotNull(groups: ['ville:create', 'ville:update'])]
+    #[Groups(['user:read', 'ville:read', 'ville:create', 'ville:update'])]
     private ?string $nom = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'villeHabitation')]
+    #[Groups(['ville:read'])]
     private Collection $users;
 
     #[ORM\Column]
-    #[Groups('user:read')]
+    #[Assert\NotBlank(groups: ['ville:create', 'ville:update'])]
+    #[Assert\NotNull(groups: ['ville:create', 'ville:update'])]
+    #[Groups(['ville:read', 'ville:create', 'ville:update'])]
     private ?int $codePostal = null;
 
-//    uniquement pour ville francais, champs pas obligatoire
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('user:read')]
+    #[Assert\NotNull(groups: ['ville:create', 'ville:update'])]
+    #[Groups(['ville:read', 'ville:create', 'ville:update'])]
     private ?string $departement = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('user:read')]
+    #[Assert\NotBlank(groups: ['ville:create', 'ville:update'])]
+    #[Assert\NotNull(groups: ['ville:create', 'ville:update'])]
+    #[Groups(['ville:read', 'ville:create', 'ville:update'])]
     private ?string $pays = null;
 
     public function __construct()
@@ -60,7 +84,6 @@ class Ville
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -85,7 +108,6 @@ class Ville
     public function removeUser(User $user): static
     {
         if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
             if ($user->getVilleHabitation() === $this) {
                 $user->setVilleHabitation(null);
             }

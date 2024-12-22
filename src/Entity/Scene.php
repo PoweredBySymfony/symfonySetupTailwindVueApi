@@ -44,7 +44,7 @@ class Scene
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["scene:read", "partie_concert:read"])]
+    #[Groups(["scene:read", "partie_concert:read",'evenementMusical:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
